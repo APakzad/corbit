@@ -35,10 +35,14 @@ import java.util.TreeSet;
 public class CTBTagDictionary extends TagDictionary {
 
     private static final long serialVersionUID = 6692431815764780778L;
-    static final String[] ssCtbTags = {"AD", "AS", "BA", "CC", "CD", "CS",
-        "DEC", "DEG", "DER", "DEV", "DT", "ETC", "FW", "IJ", "JJ", "LB",
-        "LC", "M", "MSP", "NN", "NR", "NT", "OD", "ON", "P", "PN", "PU",
-        "SB", "SP", "VA", "VC", "VE", "VV", "URL"};
+    static final String[] ssCtbTags = {"ADJ", "ADR", "ADV", "CONJ", "IDEN", "N",
+        "PART", "POSNUM", "POSTP", "PR", "PREM", "PRENUM", "PREP", "PSUS", 
+        "PUNC", "V", "SUBR", 
+        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR"};//????
+//    static final String[] ssCtbTags = {"AD", "AS", "BA", "CC", "CD", "CS",
+//        "DEC", "DEG", "DER", "DEV", "DT", "ETC", "FW", "IJ", "JJ", "LB",
+//        "LC", "M", "MSP", "NN", "NR", "NT", "OD", "ON", "P", "PN", "PU",
+//        "SB", "SP", "VA", "VC", "VE", "VV", "URL"};
     static final String[] ssOpenTags = {"AD", "CD", "FW", "JJ", "M", "MSP", 
         "NN", "NR", "NT", "OD", "VA", "VV", "URL"};
     static final String[] ssClosedTags = {"AS", "BA", "CC", "CS", "DEC", "DEG",

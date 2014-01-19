@@ -45,7 +45,9 @@ class PlainReader extends ParseReader {
 
     String m_sFile;
 
-    public PlainReader(String sFile) throws FileNotFoundException, UnsupportedEncodingException {
+    public PlainReader(String sFile) 
+            throws FileNotFoundException, 
+                   UnsupportedEncodingException {
         m_sFile = sFile;
     }
 
@@ -70,6 +72,7 @@ class PlainReader extends ParseReader {
 
                 for (int i = 0; i < ss.length; ++i) {
                     Pattern re = Pattern.compile("(.+)#(.+)");
+//                    Pattern re = Pattern.compile("(.+)#(.+)");
                     Matcher mc = re.matcher(ss[i]);
 
                     if (!mc.matches() || mc.groupCount() < 2) {

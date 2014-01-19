@@ -50,10 +50,7 @@ public class Word {
             return false;
         }
         Word w = (Word) obj;
-        if (!w.form.equals(form) || !w.pos.equals(pos)) {
-            return false;
-        }
-        return true;
+        return w.form.equals(form) && w.pos.equals(pos);
     }
 
     @Override

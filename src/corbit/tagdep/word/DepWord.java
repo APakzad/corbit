@@ -56,13 +56,10 @@ public class DepWord extends Word {
             return false;
         }
         DepWord dw = (DepWord) obj;
-        if (index != dw.index
-                || head != dw.head
-                || sent != dw.sent
-                || !super.equals((Word) dw)) {
-            return false;
-        }
-        return true;
+        return index == dw.index && 
+               head == dw.head && 
+               sent == dw.sent && 
+               super.equals((Word) dw);
     }
 
     @Override

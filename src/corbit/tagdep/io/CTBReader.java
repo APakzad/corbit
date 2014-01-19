@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 public class CTBReader extends ParseReader {
 
-    private String m_sFile;
+    private final String m_sFile;
 
     public CTBReader(String sFile) {
         this.m_sFile = sFile;
@@ -62,13 +62,15 @@ public class CTBReader extends ParseReader {
                 }
                 ++iSentence;
                 DepTreeSentence s = new DepTreeSentence();
-                String[] ss = l.split(" ");
+//                String[] ss = l.split(" ");
+                String[] ss = l.split("\\) ");
                 for (int i = 0; i < ss.length; ++i) {
                     s.add(new DepTree());
                 }
 
                 for (int i = 0; i < ss.length; ++i) {
-                    Pattern re = Pattern.compile("(.*?):\\((.*?)\\)_\\((.*?)\\)_\\((.*?)\\)");
+//                    Pattern re = Pattern.compile("(.*?):\\((.*?)\\)_\\((.*?)\\)_\\((.*?)\\)");
+                    Pattern re = Pattern.compile("(.*?):\\((.*?)\\)_\\((.*?)\\)_\\((.*?)\\)?");
                     Matcher mc = re.matcher(ss[i]);
 
                     if (!mc.matches() || mc.groupCount() < 4) {
@@ -86,18 +88,22 @@ public class CTBReader extends ParseReader {
                     if (!sPos.startsWith("/") && sPos.contains("/")) {
                         sPos = sPos.split("/")[0];
                     }
-                    if (sPos.equals("X")) // a noisy tag assigned to 'x', as in '130 x 130'
-                    {
-                        sPos = "M";
-                    } else if (sPos.equals("NP")) {
-                        sPos = "NN";
-                    } else if (sPos.equals("VP")) {
-                        sPos = "PU";
+                    // a noisy tag assigned to 'x', as in '130 x 130'
+                    switch (sPos) {
+                        case "X":
+                            sPos = "M";
+                            break;
+                        case "NP":
+                            sPos = "NN";
+                            break;
+                        case "VP":
+                            sPos = "PU";
+                            break;
                     }
 
                     if (!posSet.contains(sPos)) {
                         Console.writeLine("Unknown POS: " + sPos);
-                        break;
+//                        break;
                     }
 
                     int iIndex = Integer.parseInt(mc.group(1));
@@ -105,7 +111,8 @@ public class CTBReader extends ParseReader {
                     DepTree dw = s.get(i);
                     dw.sent = s;
                     dw.index = iIndex;
-                    dw.form = sForm;
+//                    dw.form = sForm;
+                    dw.form = sForm.replace(" ", "‌");
                     dw.pos = sPos;
                     dw.head = iHead;
 

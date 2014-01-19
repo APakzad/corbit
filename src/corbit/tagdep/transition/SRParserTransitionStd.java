@@ -465,6 +465,8 @@ public class SRParserTransitionStd extends SRParserTransition {
         // }
 
         IntFeatVector fvprf2 = new IntFeatVector();
+if (s == null)
+    System.err.println("");
         List<PDAction> lAct = s.getActionSequence();
         SRParserState s3 = m_generator.create(s.sent);
         for (PDAction act : lAct) {

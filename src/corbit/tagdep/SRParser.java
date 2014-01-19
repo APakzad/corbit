@@ -136,8 +136,11 @@ public class SRParser extends SRParserParameters {
         m_vocab.setUseTrie();
     }
 
-    double iterateOnce(String sFile, String sRefFile, boolean bTrain, String sParseFile) throws IOException {
-        ParseReader ct = m_iInputFormat == 0 ? new MaltReader(sFile) : new CTBReader(sFile);
+    double iterateOnce(String sFile, String sRefFile, boolean bTrain, String sParseFile) 
+            throws IOException {
+        ParseReader ct = m_iInputFormat == 0 
+                ? new MaltReader(sFile) 
+                : new CTBReader(sFile);
         List<DepTreeSentence> lt = new ArrayList<>();
         for (DepTreeSentence p : ct) {
             if (p != null) {
@@ -149,7 +152,9 @@ public class SRParser extends SRParserParameters {
         List<DepTreeSentence> lr = null;
         if (sRefFile != null) {
             lr = new ArrayList<>();
-            ParseReader cr = m_iInputFormat == 0 ? new MaltReader(sFile) : new CTBReader(sRefFile);
+            ParseReader cr = m_iInputFormat == 0 
+                    ? new MaltReader(sFile) 
+                    : new CTBReader(sRefFile);
             for (DepTreeSentence p : cr) {
                 if (p != null) {
                     lr.add(p);
@@ -398,6 +403,7 @@ public class SRParser extends SRParserParameters {
 
         main:
         while ((buf = br.readLine()) != null) {
+            
             buf = Statics.trimSpecial(buf);
             if (buf.length() == 0) {
                 Console.writeLine();
@@ -430,7 +436,8 @@ public class SRParser extends SRParserParameters {
         sp.shutdown();
     }
 
-    public void train(String sTrainFile, String sDevFile, String sSaveFile, int iMaxPerceptIt) throws IOException {
+    public void train(String sTrainFile, String sDevFile, String sSaveFile, int iMaxPerceptIt) 
+            throws IOException {
         // main loop
         Stopwatch sw;
         Stopwatch swTotal = new Stopwatch("Training");

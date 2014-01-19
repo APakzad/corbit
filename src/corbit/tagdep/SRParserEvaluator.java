@@ -300,6 +300,7 @@ public class SRParserEvaluator {
         if (!bParse) {
             for (int i = 0; i < osent.size(); ++i) {
                 osent.get(i).head = gsent.get(i).head;
+                osent.get(i).form = gsent.get(i).form;
             }
         }
 

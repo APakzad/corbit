@@ -224,7 +224,7 @@ public abstract class TagDictionary {
                 }
                 for (DepTree t : sent) {
                     if (!m_tagIndex.containsKey(t.pos)) {
-                        throw new RuntimeException("Unknown POS: " + t.pos);
+//                        throw new RuntimeException("Unknown POS: " + t.pos);
                     }
                     if (!dict.containsKey(t.form)) {
                         dict.put(t.form, new TreeMap<String, Integer>());

@@ -217,7 +217,9 @@ class Program {
                     lArgs.remove(i);
                     parser.m_bUseClosedTags = true;
                     parser.setUseClosedTags(true);
-                } else if (evalCommonOpt(parser, i, lArgs)); else if (evalExperimentalOpt(conf, i, lArgs)); else if (lArgs.get(i).startsWith("-")) {
+                } else if (evalCommonOpt(parser, i, lArgs)); 
+                  else if (evalExperimentalOpt(conf, i, lArgs)); 
+                  else if (lArgs.get(i).startsWith("-")) {
                     System.err.println("Unknown option: " + lArgs.get(i));
                     System.exit(-1);
                 } else {
@@ -259,7 +261,10 @@ class Program {
                     if (lArgs.get(i).equals("--print-params")) {
                         lArgs.remove(i);
                         bPrintParams = true;
-                    } else if (evalCommonOpt(parser, i, lArgs)); else if (evalExperimentalOpt(conf, i, lArgs)); else if (lArgs.get(i).startsWith("-")) {
+                    } 
+                    else if (evalCommonOpt(parser, i, lArgs)); 
+                    else if (evalExperimentalOpt(conf, i, lArgs)); 
+                    else if (lArgs.get(i).startsWith("-")) {
                         System.err.println("Unknown option: " + lArgs.get(i));
                         System.exit(-1);
                     } else {
@@ -299,7 +304,9 @@ class Program {
                         lArgs.remove(i);
                         sRefFile = lArgs.get(i);
                         lArgs.remove(i);
-                    } else if (evalCommonOpt(parser, i, lArgs)); else if (evalExperimentalOpt(conf, i, lArgs)); else if (lArgs.get(i).startsWith("-")) {
+                    } else if (evalCommonOpt(parser, i, lArgs)); 
+                      else if (evalExperimentalOpt(conf, i, lArgs)); 
+                      else if (lArgs.get(i).startsWith("-")) {
                         System.err.println("Unknown option: " + lArgs.get(i));
                         System.exit(-1);
                     } else {

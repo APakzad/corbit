@@ -97,11 +97,7 @@ public class Statics {
     }
 
     public static boolean doubleEquals(double a, double b) {
-        if (Math.abs(a - b) < EPS) {
-            return true;
-        } else {
-            return false;
-        }
+        return Math.abs(a - b) < EPS;
     }
 
     public static String trimSpecial(String s) {
