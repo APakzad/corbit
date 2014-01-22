@@ -82,24 +82,24 @@ public class CTBReader extends ParseReader {
                     String sForm = Normalizer.normalize(mc.group(3), Normalizer.Form.NFKC);
                     String sPos = mc.group(4);
 
-                    if (!sPos.startsWith("-") && sPos.contains("-")) {
-                        sPos = sPos.split("-")[0];
-                    }
-                    if (!sPos.startsWith("/") && sPos.contains("/")) {
-                        sPos = sPos.split("/")[0];
-                    }
+//                    if (!sPos.startsWith("-") && sPos.contains("-")) {
+//                        sPos = sPos.split("-")[0];
+//                    }
+//                    if (!sPos.startsWith("/") && sPos.contains("/")) {
+//                        sPos = sPos.split("/")[0];
+//                    }
                     // a noisy tag assigned to 'x', as in '130 x 130'
-                    switch (sPos) {
-                        case "X":
-                            sPos = "M";
-                            break;
-                        case "NP":
-                            sPos = "NN";
-                            break;
-                        case "VP":
-                            sPos = "PU";
-                            break;
-                    }
+//                    switch (sPos) {
+//                        case "X":
+//                            sPos = "M";
+//                            break;
+//                        case "NP":
+//                            sPos = "NN";
+//                            break;
+//                        case "VP":
+//                            sPos = "PU";
+//                            break;
+//                    }
 
                     if (!posSet.contains(sPos)) {
                         Console.writeLine("Unknown POS: " + sPos);

@@ -84,13 +84,13 @@ class PlainReader extends ParseReader {
                     String sForm = Normalizer.normalize(mc.group(1), Normalizer.Form.NFKC);
                     String sPos = mc.group(2);
 
-                    if (!sPos.startsWith("-") && sPos.contains("-")) {
-                        sPos = sPos.split("-")[0];
-                    } else if (sPos.equals("-NONE-")) {
-                        sPos = "NONE";
-                    } else if (sPos.equals("PU/")) {
-                        sPos = "PU";
-                    }
+//                    if (!sPos.startsWith("-") && sPos.contains("-")) {
+//                        sPos = sPos.split("-")[0];
+//                    } else if (sPos.equals("-NONE-")) {
+//                        sPos = "NONE";
+//                    } else if (sPos.equals("PU/")) {
+//                        sPos = "PU";
+//                    }
 
                     if (!posSet.contains(sPos)) {
                         Console.writeLine("Unknown POS: " + sPos);

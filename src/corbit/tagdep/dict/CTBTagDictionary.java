@@ -38,16 +38,20 @@ public class CTBTagDictionary extends TagDictionary {
     static final String[] ssCtbTags = {"ADJ", "ADR", "ADV", "CONJ", "IDEN", "N",
         "PART", "POSNUM", "POSTP", "PR", "PREM", "PRENUM", "PREP", "PSUS", 
         "PUNC", "V", "SUBR", 
-        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR"};//????
+        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR", "NUM", "EMPH"};//????
 //    static final String[] ssCtbTags = {"AD", "AS", "BA", "CC", "CD", "CS",
 //        "DEC", "DEG", "DER", "DEV", "DT", "ETC", "FW", "IJ", "JJ", "LB",
 //        "LC", "M", "MSP", "NN", "NR", "NT", "OD", "ON", "P", "PN", "PU",
 //        "SB", "SP", "VA", "VC", "VE", "VV", "URL"};
-    static final String[] ssOpenTags = {"AD", "CD", "FW", "JJ", "M", "MSP", 
-        "NN", "NR", "NT", "OD", "VA", "VV", "URL"};
-    static final String[] ssClosedTags = {"AS", "BA", "CC", "CS", "DEC", "DEG",
-        "DER", "DEV", "DT", "ETC", "IJ", "LB", "LC", "ON", "P", "PN", "PU",
-        "SB", "SP", "VC", "VE"};
+    static final String[] ssOpenTags = {"ADJ", "ADR", "ADV", "CONJ", "IDEN", "N",
+        "PART", "POSNUM", "POSTP", "PR", "PREM", "PRENUM", "PREP", "PSUS", 
+        "PUNC", "V", "SUBR", 
+        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR", "NUM", "EMPH"};//????
+//    {"AD", "CD", "FW", "JJ", "M", "MSP", 
+//        "NN", "NR", "NT", "OD", "VA", "VV", "URL"};
+    static final String[] ssClosedTags = {};//"AS", "BA", "CC", "CS", "DEC", "DEG",
+//        "DER", "DEV", "DT", "ETC", "IJ", "LB", "LC", "ON", "P", "PN", "PU",
+//        "SB", "SP", "VC", "VE"};
 
     public CTBTagDictionary(boolean bUseClosedTags) {
         super(

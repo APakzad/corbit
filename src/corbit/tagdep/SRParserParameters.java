@@ -29,6 +29,7 @@
  */
 package corbit.tagdep;
 
+import corbit.tagdep.io.InputFormat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -63,7 +64,7 @@ public class SRParserParameters {
     public boolean m_bUseLookAhead = true;
     // program options
     int m_iParallel = 1;
-    int m_iInputFormat = 0; // 0: Malt, 1: CTB
+    InputFormat m_iInputFormat = InputFormat.Malt; // 0: Malt, 1: CTB, 2: CoNLL
     boolean m_bDebug = false;
     boolean m_bLoadOnMemory = true;
     boolean m_bSaveEach = false;

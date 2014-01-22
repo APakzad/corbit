@@ -46,6 +46,7 @@ import corbit.tagdep.handler.SRParserCtbHandlerZC08;
 import corbit.tagdep.handler.SRParserCtbHandlerZN11;
 import corbit.tagdep.handler.SRParserHandler;
 import corbit.tagdep.io.CTBReader;
+import corbit.tagdep.io.CoNLLReader;
 import corbit.tagdep.io.MaltReader;
 import corbit.tagdep.io.ParseReader;
 import corbit.tagdep.io.ParseWriter;
@@ -56,6 +57,7 @@ import corbit.tagdep.word.DepTreeSentence;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -135,12 +137,23 @@ public class SRParser extends SRParserParameters {
     public void setUseTrie() {
         m_vocab.setUseTrie();
     }
+    
+    private ParseReader getReader(String file) 
+            throws IOException {
+        switch(m_iInputFormat) {
+            default:
+            case Malt: 
+                return new MaltReader(file);
+            case CTB:
+                return new CTBReader(file);
+            case CoNLL:
+                return new CoNLLReader(file);
+        }
+    }
 
     double iterateOnce(String sFile, String sRefFile, boolean bTrain, String sParseFile) 
             throws IOException {
-        ParseReader ct = m_iInputFormat == 0 
-                ? new MaltReader(sFile) 
-                : new CTBReader(sFile);
+        ParseReader ct = getReader(sFile);
         List<DepTreeSentence> lt = new ArrayList<>();
         for (DepTreeSentence p : ct) {
             if (p != null) {
@@ -152,9 +165,7 @@ public class SRParser extends SRParserParameters {
         List<DepTreeSentence> lr = null;
         if (sRefFile != null) {
             lr = new ArrayList<>();
-            ParseReader cr = m_iInputFormat == 0 
-                    ? new MaltReader(sFile) 
-                    : new CTBReader(sRefFile);
+            ParseReader cr = getReader(sFile);
             for (DepTreeSentence p : cr) {
                 if (p != null) {
                     lr.add(p);
@@ -326,7 +337,7 @@ public class SRParser extends SRParserParameters {
                     }
                     boolean bResult = (rsent == null) ? eval.evalSentence(osent, gsent) : eval.evalSegmentedSentence(osent, rsent);
 
-                    if (bTrain && !bResult) {
+                    if (bTrain && !bResult && sg != null) {//???????? && sg != null????????????
                         IntFeatVector vg = parser.getPrefixFeatures(sg);
                         IntFeatVector vo = parser.getPrefixFeatures(so);
                         IntFeatVector vd = IntFeatVector.subtract(vg, vo);

@@ -34,6 +34,7 @@ import corbit.commons.util.GlobalConf;
 import corbit.tagdep.dict.CTBTagDictionary;
 import corbit.tagdep.dict.TagDictionary;
 import corbit.tagdep.io.CTBReader;
+import corbit.tagdep.io.InputFormat;
 import corbit.tagdep.io.ParseReader;
 import java.io.File;
 import java.io.IOException;
@@ -67,10 +68,13 @@ class Program {
                 String sFormat = lArgs.get(i).toLowerCase();
                 switch (sFormat) {
                     case "ctb":
-                        parser.m_iInputFormat = 1;
+                        parser.m_iInputFormat = InputFormat.CTB;
                         break;
                     case "malt":
-                        parser.m_iInputFormat = 0;
+                        parser.m_iInputFormat = InputFormat.Malt;
+                        break;
+                    case "conll":
+                        parser.m_iInputFormat = InputFormat.CoNLL;
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown format: " + sFormat);

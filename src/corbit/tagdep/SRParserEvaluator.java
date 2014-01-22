@@ -170,7 +170,7 @@ public class SRParserEvaluator {
 
                 // dependency evaluation, where punctuation symbols are excluded
 
-                if (bParse && !wg.pos.equals("PU")) {
+                if (bParse && !wg.pos.equals("PUNC")) {
                     if (wg.head == -1 && wo.head == -1
                             || wg.head != -1 && wo.head != -1
                             && gbounds.get(wg.head) == obounds.get(wo.head)
@@ -225,22 +225,22 @@ public class SRParserEvaluator {
                     ++iNumTagIv;
                 }
             }
-            if (b1 && bParse && !wo.pos.equals("PU") && wo.head != -2) {
+            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head != -2) {
                 ++iNumOutDep;
             }
-            if (b2 && bParse && !wg.pos.equals("PU") && wg.head != -2) {
+            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head != -2) {
                 ++iNumDep;
             }
-            if (b1 && bParse && !wo.pos.equals("PU") && wo.head == -1) {
+            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head == -1) {
                 ++iNumOutRoot;
             }
-            if (b2 && bParse && !wg.pos.equals("PU") && wg.head == -1) {
+            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head == -1) {
                 ++iNumRoot;
             }
-            if (b1 && bParse && !wo.pos.equals("PU") && wo.head >= 0) {
+            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head >= 0) {
                 ++iNumOutNrt;
             }
-            if (b2 && bParse && !wg.pos.equals("PU") && wg.head >= 0) {
+            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head >= 0) {
                 ++iNumNrt;
             }
 
@@ -248,7 +248,7 @@ public class SRParserEvaluator {
             if (bDebug) {
                 char c0 = bSegRight ? 'O' : 'X';
                 char c1 = bSegRight ? bPosRight ? 'O' : 'X' : '-';
-                char c2 = (!bParse || wg == null || wg.pos.equals("PU") || !bSegRight) ? '-' : bDepRight ? 'O' : 'X';
+                char c2 = (!bParse || wg == null || wg.pos.equals("PUNC") || !bSegRight) ? '-' : bDepRight ? 'O' : 'X';
 
                 String sForm = b1 ? wo.form : "-";
                 String sTag = b1 ? wo.pos : "-";
@@ -359,7 +359,7 @@ public class SRParserEvaluator {
             }
 
             // dependency evaluation, where punctuation symbols are excluded
-            if (bParse && !wg.pos.equals("PU")) {
+            if (bParse && !wg.pos.equals("PUNC")) {
                 ++iNumDep;
                 if (wo.head != -2) {
                     ++iNumOutDep;
@@ -391,7 +391,7 @@ public class SRParserEvaluator {
             // display the result
             if (bDebug) {
                 char c1 = bPosRight ? 'O' : 'X';
-                char c2 = (!bParse || wg.pos.equals("PU")) ? '-' : bDepRight ? 'O' : 'X';
+                char c2 = (!bParse || wg.pos.equals("PUNC")) ? '-' : bDepRight ? 'O' : 'X';
                 String sHead = (wo.head == -2) ? "-" : Integer.toString(wo.head);
                 Console.writeLine(String.format("%c %c %d %02d %12s %4s %2s %12s %4s %2d", c1, c2, iNumSent, i, wo.form, wo.pos, sHead, wg.form, wg.pos, wg.head));
             }

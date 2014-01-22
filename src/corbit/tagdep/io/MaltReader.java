@@ -78,13 +78,14 @@ public class MaltReader extends ParseReader {
                     String sForm = Normalizer.normalize(r[0], Normalizer.Form.NFKC);
                     String sPos = r[1];
 
-                    if (!sPos.startsWith("-") && sPos.contains("-")) {
-                        sPos = sPos.split("-")[0];
-                    } else if (sPos.equals("-NONE-")) {
-                        sPos = "NONE";
-                    } else if (sPos.equals("PU/")) {
-                        sPos = "PU";
-                    }
+//                    if (!sPos.startsWith("-") && sPos.contains("-")) {
+//                        sPos = sPos.split("-")[0];
+//                    } else if (sPos.equals("-NONE-")) {
+//                        sPos = "NONE";
+//                    } else if (sPos.equals("PU/")) {
+//                        sPos = "PU";
+//                    }
+                    
                     if (!posSet.contains(sPos)) {
                         Console.writeLine("Unknown POS: " + sPos);
                     }
