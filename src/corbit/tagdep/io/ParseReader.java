@@ -77,6 +77,27 @@ public abstract class ParseReader extends Generator<DepTreeSentence> {
         }
     }
 
+    public static void conllToPlain(String sFile, String sOutFile) 
+            throws IOException {
+        try (PrintWriter pw = new PrintWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream(sOutFile), "UTF-8"))) {
+            CoNLLReader cr = new CoNLLReader(sFile);
+            try {
+                while (cr.hasNext()) {
+                    DepTreeSentence s = cr.next();
+                    for (int i = 0; i < s.size(); ++i) {
+//                        pw.print(s.get(i).form + "/" + s.get(i).pos + " ");
+                        pw.print(s.get(i).form + "#" + s.get(i).pos + " ");
+                    }
+                    pw.println();
+                }
+            } finally {
+                cr.shutdown();
+            }
+        }
+    }
+
     public static void maltToDep(String sFile, String sOutFile) 
             throws IOException {
         try (PrintWriter pw = new PrintWriter(

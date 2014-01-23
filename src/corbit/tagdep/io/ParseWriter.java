@@ -40,10 +40,21 @@ import java.io.UnsupportedEncodingException;
 public class ParseWriter {
 
     private PrintWriter sw;
+    private final InputFormat format;
 
-    public ParseWriter(String sFile) 
+    public ParseWriter(String sFile)
             throws FileNotFoundException, 
                    UnsupportedEncodingException {
+        this.format = InputFormat.CTB;
+        sw = new PrintWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream(sFile), "UTF-8"));
+    }
+    
+    public ParseWriter(String sFile, InputFormat format) 
+            throws FileNotFoundException, 
+                   UnsupportedEncodingException {
+        this.format = format;
         sw = new PrintWriter(
                 new OutputStreamWriter(
                     new FileOutputStream(sFile), "UTF-8"));
@@ -51,11 +62,47 @@ public class ParseWriter {
 
     public void writeParse(DepTreeSentence sent, DepTreeSentence gsent, 
                            boolean bGoldPos, boolean bGoldHead) {
+        switch(format) {
+            case Malt: 
+                writeMstParse(sent, gsent, bGoldPos, bGoldHead);
+                break;
+            default:
+            case CTB:
+                writeCtbParse(sent, gsent, bGoldPos, bGoldHead);
+                break;
+            case CoNLL:
+                writeConllParse(sent, gsent, bGoldPos, bGoldHead);
+                break;
+        }
+    }
+    
+    private void writeMstParse(DepTreeSentence sent, DepTreeSentence gsent, 
+                           boolean bGoldPos, boolean bGoldHead) {
         assert (sent.size() == gsent.size());
         for (int i = 0; i < sent.size(); ++i) {
             DepTree dt = sent.get(i);
             DepTree dg = gsent.get(i);
-            sw.print(String.format("%d:(%d)_(%s)_(%s) ", i, 
+            sw.print(String.format("%s\t%s\t%d\t%d\n", 
+                dt.form, 
+                bGoldPos 
+                    ? dg.pos 
+                    : dt.pos,
+                (bGoldHead 
+                    ? dg.head 
+                    : dt.head)+1, 
+                "_"));
+        }
+        sw.println();
+    }
+    
+    private void writeCtbParse(DepTreeSentence sent, DepTreeSentence gsent, 
+                           boolean bGoldPos, boolean bGoldHead) {
+        assert (sent.size() == gsent.size());
+        for (int i = 0; i < sent.size(); ++i) {
+            DepTree dt = sent.get(i);
+            DepTree dg = gsent.get(i);
+            sw.print(String.format("%d:(%d)_(%s)_(%s) ", 
+                i, 
                 bGoldHead 
                     ? dg.head 
                     : dt.head, 
@@ -63,6 +110,31 @@ public class ParseWriter {
                 bGoldPos 
                     ? dg.pos 
                     : dt.pos));
+        }
+        sw.println();
+    }
+
+    private void writeConllParse(DepTreeSentence sent, DepTreeSentence gsent, 
+                           boolean bGoldPos, boolean bGoldHead) {
+        assert (sent.size() == gsent.size());
+        for (int i = 0; i < sent.size(); ++i) {
+            DepTree dt = sent.get(i);
+            DepTree dg = gsent.get(i);
+            sw.print(String.format("%d\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t_\t_\n", 
+                i+1, 
+                dt.form, 
+                dt.form, 
+                bGoldPos 
+                    ? dg.pos 
+                    : dt.pos,
+                bGoldPos 
+                    ? dg.pos 
+                    : dt.pos,
+                "_",
+                (bGoldHead 
+                    ? dg.head 
+                    : dt.head)+1, 
+                "_"));
         }
         sw.println();
     }

@@ -34,6 +34,7 @@ import corbit.commons.util.GlobalConf;
 import corbit.tagdep.dict.CTBTagDictionary;
 import corbit.tagdep.dict.TagDictionary;
 import corbit.tagdep.io.CTBReader;
+import corbit.tagdep.io.CoNLLReader;
 import corbit.tagdep.io.InputFormat;
 import corbit.tagdep.io.ParseReader;
 import java.io.File;
@@ -327,8 +328,21 @@ class Program {
                 usage();
             }
             TagDictionary dict = new CTBTagDictionary(true);
-            ParseReader pr = new CTBReader(lArgs.get(1));
-            dict.createCountDict(pr, lArgs.get(2));
+            if (lArgs.get(3).equals("--input-format")) {
+                String sFormat = lArgs.get(4).toLowerCase();
+                switch (sFormat) {
+                    case "ctb":
+                        dict.createCountDict(
+                                new CTBReader(lArgs.get(1)), 
+                                lArgs.get(2));
+                        break;
+                    case "conll":
+                        dict.createCountDict(
+                                new CoNLLReader(lArgs.get(1)), 
+                                lArgs.get(2));
+                        break;
+                }
+            }
         } else if (lArgs.get(0).equals("MaltToDep")) {
             if (lArgs.size() < 3) {
                 usage();
@@ -339,6 +353,11 @@ class Program {
                 usage();
             }
             ParseReader.ctbToPlain(lArgs.get(1), lArgs.get(2));
+        } else if (lArgs.get(0).equals("ConllToPlain")) {
+            if (lArgs.size() < 3) {
+                usage();
+            }
+            ParseReader.conllToPlain(lArgs.get(1), lArgs.get(2));
         } else if (lArgs.get(0).equals("EvalPos")) {
             if (lArgs.size() < 3) {
                 usage();

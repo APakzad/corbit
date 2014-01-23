@@ -57,7 +57,6 @@ import corbit.tagdep.word.DepTreeSentence;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -269,7 +268,7 @@ public class SRParser extends SRParserParameters {
     double parallelIterateOnce(
             final List<DepTreeSentence> gsents, final List<DepTreeSentence> rsents,
             final boolean bTrain, String sParseFile) throws IOException {
-        ParseWriter pw = sParseFile != null ? new ParseWriter(sParseFile) : null;
+        ParseWriter pw = sParseFile != null ? new ParseWriter(sParseFile, m_iInputFormat) : null;
         SRParserEvaluator eval = new SRParserEvaluator(m_dict, m_bParse, m_bDebug);
 
         int iMergedState = 0;
