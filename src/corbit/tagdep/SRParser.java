@@ -225,7 +225,7 @@ public class SRParser extends SRParserParameters {
             // main loop
             while (true) {
                 // proceed a shift-reduce step of gold derivation
-                if (bTrain || m_bShowStats) {
+                if (bTrain || m_bShowStats && sg != null) {//???????? && sg != null????????????
                     sg = trans.moveNextGold(sg, gsent, false).second;
                 }
 
