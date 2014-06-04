@@ -72,7 +72,9 @@ public class SRParserEvaluator {
     int[][] miPosConfusion;
     int[][] miActConfusion;
     final TagDictionary m_dict;
-
+    
+    int iNumRightDepPos=0; int iNumOutDepPos=0; int iNumDepPos=0;     // افزوده شده
+    
     public SRParserEvaluator(TagDictionary dict, boolean bParse, boolean bDebug) {
         this.m_dict = dict;
         this.bParse = bParse;
@@ -243,7 +245,19 @@ public class SRParserEvaluator {
             if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head >= 0) {
                 ++iNumNrt;
             }
-
+            
+            /*افزوده شده */
+            if(bDepRight && bPosRight){
+                ++iNumRightDepPos;
+            }
+            if(b1 && !wo.pos.equals("PUNC") && wo.head != -2 && wo.pos != null){
+                ++iNumOutDepPos;
+            }
+            if(b2 && !wg.pos.equals("PUNC") && wg.head != -2 &&  wg.pos != null ){
+                ++iNumDepPos;
+            }
+            // پايان تغييرات
+            
             // display the result
             if (bDebug) {
                 char c0 = bSegRight ? 'O' : 'X';
@@ -360,6 +374,10 @@ public class SRParserEvaluator {
 
             // dependency evaluation, where punctuation symbols are excluded
             if (bParse && !wg.pos.equals("PUNC")) {
+                ++iNumDepPos; // اضافه شده
+                if(wo.pos!=null){   //اضافه شده
+                    ++iNumOutDepPos;
+                }
                 ++iNumDep;
                 if (wo.head != -2) {
                     ++iNumOutDep;
@@ -386,6 +404,9 @@ public class SRParserEvaluator {
                 } else {
                     bDepRightSent = false;
                 }
+            } 
+            if(bDepRight && bPosRight){    //اضافه شده
+                ++iNumRightDepPos;
             }
 
             // display the result
@@ -415,9 +436,9 @@ public class SRParserEvaluator {
      * @return total score of the sentence (dependency or tagging accuracy)
      */
     public double evalTotal() {
-        String[] ssLabels = new String[]{"SEG", "POS", "PSI", "PSO", "DEP", "NRT", "ROT", "SNT"};
+        String[] ssLabels = new String[]{"DepPos", "POS", "PSI", "PSO", "DEP", "NRT", "ROT", "SNT"};
         int[][] iiNums = new int[][]{
-            {iNumRightSeg, iNumOutSeg, iNumSeg},
+            {iNumRightDepPos, iNumOutDepPos, iNumDepPos},
             {iNumRightTag, iNumOutTag, iNumTag},
             {iNumRightTagIv, iNumOutTagIv, iNumTagIv},
             {iNumRightTagOv, iNumOutTagOv, iNumTagOv},
