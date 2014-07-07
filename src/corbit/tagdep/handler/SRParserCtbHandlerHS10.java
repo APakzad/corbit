@@ -69,7 +69,12 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         static final int F_punct = 21;
         static final int F_adjoin = 22;
         static final int F_npos = 23;
-        static final int NUM_FEATURE = 24;
+        static final int F_lemmq1=24;
+        static final int F_lemmq2=25;
+        static final int F_lemms0=26;
+        static final int F_lemms1=27;
+        
+        static final int NUM_FEATURE = 28;
 
         AtomsHS10(
                 int curidx,
@@ -96,7 +101,8 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
                 String punct,
                 boolean adjoin,
                 String npos,
-                TreeSet<String> fvdelay) {
+                TreeSet<String> fvdelay,
+                String lemmq1, String lemmq2, String lemms0, String lemms1) {
             super(NUM_FEATURE, fvdelay);
             features = new String[NUM_FEATURE];
             features[F_curidx] = Integer.toString(curidx);
@@ -123,6 +129,10 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
             features[F_punct] = punct;
             features[F_adjoin] = Boolean.toString(adjoin);
             features[F_npos] = npos;
+            features[F_lemmq1] = lemmq1;
+            features[F_lemmq2] = lemmq2;
+            features[F_lemms0] = lemms0;
+            features[F_lemms1] = lemms1;
             setHash();
         }
     }
@@ -145,7 +155,11 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         DepTree wst1lc = wst1 != null ? getLeftmostChild(wst1) : null;
 
         int idx = s0.curidx;
-
+        String sLemmq1 = idx < s0.sent.size() ? s0.sent.get(idx).lemm : OOR;
+        String sLemmq2 = idx < s0.sent.size()-1 ? s0.sent.get(idx+1).lemm : OOR;
+        String sLemms0 = wst0 != null ? wst0.lemm : null;
+        String sLemms1 = wst1 != null ? wst1.lemm : null;
+        
         String sfst0 = wst0.form;
         String sfst1 = wst1 != null ? wst1.form : OOR;
         String sfqp1 = idx > 0 ? s0.sent.get(idx - 1).form : OOR;
@@ -205,7 +219,11 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
                 sPunct,
                 bAdjoin,
                 OOR,
-                s0.fvdelay != null ? new TreeSet<>(s0.fvdelay) : null);
+                s0.fvdelay != null ? new TreeSet<>(s0.fvdelay) : null,
+                sLemmq1,
+                sLemmq2,
+                sLemms0,
+                sLemms1);
     }
 
     @Override
@@ -229,7 +247,11 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         String spst1lc = s0.atoms.get(AtomsHS10.F_p_st1lc);
         String sPunct = s0.atoms.get(AtomsHS10.F_punct);
         String sAdjoin = s0.atoms.get(AtomsHS10.F_adjoin);
-
+        String sLemmq1 = s0.atoms.get(AtomsHS10.F_lemmq1);
+        String sLemmq2=s0.atoms.get(AtomsHS10.F_lemmq2);
+        String sLemms0=s0.atoms.get(AtomsHS10.F_lemms0);
+        String sLemms1=s0.atoms.get(AtomsHS10.F_lemms1);
+        
         int curidx = s0.curidx;
         final int szSent = s0.sent.size();
 
@@ -247,7 +269,7 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
          */
 
         if (act == PDAction.REDUCE_LEFT || act == PDAction.REDUCE_RIGHT || act == PDAction.SHIFT || act.isShiftPosAction()) {
-            SRParserCtbHandlerHS10.setParseFeaturesHS10(v, vd, m_vocab, bAdd, sAct, sfst0, sfst1, sfqf1, spst0, spst1, spst2, spqf1, spqf2, spst0rc, spst0lc, spst1rc, spst1lc, sPunct, sAdjoin, curidx, szSent, m_params.m_bUseLookAhead);
+            SRParserCtbHandlerHS10.setParseFeaturesHS10(v, vd, m_vocab, bAdd, sAct, sfst0, sfst1, sfqf1, spst0, spst1, spst2, spqf1, spqf2, spst0rc, spst0lc, spst1rc, spst1lc, sPunct, sAdjoin,sLemmq1,sLemmq2,sLemms0 ,sLemms1, curidx, szSent, m_params.m_bUseLookAhead);
         }
 
         /*
@@ -266,7 +288,7 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         if (m_params.m_bUseTagFeature && act.isShiftPosAction()) {
             SRParserCtbHandlerZC08.setTagFeaturesZC08(v, m_vocab, m_dict, bAdd, sAct, sfqp1, sfqf1, sfqf2, spqp1, spqp2);
             if (m_params.m_bUseSyntax) {
-                SRParserCtbHandlerHS10.setTagSyntacticFeatures(v, m_vocab, bAdd, sAct, sfst0, sfqf1, spst0, spst1, spst0lc);
+                SRParserCtbHandlerHS10.setTagSyntacticFeatures(v, m_vocab, bAdd, sAct, sfst0, sfqf1, spst0, spst1, spst0lc, sLemmq1, sLemmq2, sLemms0, sLemms1);
             }
         }
 
@@ -283,7 +305,7 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
             String sfst0, String sfst1, String sfqf1, String spst0,
             String spst1, String spst2, String spqf1, String spqf2,
             String spst0rc, String spst0lc, String spst1rc, String spst1lc,
-            String sPunct, String sAdjoin,
+            String sPunct, String sAdjoin, String sLemmq1, String sLemmq2, String sLemms0, String sLemms1,
             final int curidx, final int szSent,
             boolean bUseLookAhead) {
         addFeature(v, "FP01-" + sfst0, sAct, 1.0, bAdd, vocab);
@@ -367,12 +389,18 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         addFeature(v, "FP30-" + spst0 + SEP + spst1, sAct, sAdjoin.equals("true") ? 1.0 : 0.0, bAdd, vocab);
         addFeature(v, "FP31-" + sPunct, sAct, 1.0, bAdd, vocab);
         addFeature(v, "FP32-" + spst0 + SEP + spst1 + SEP + sPunct, sAct, 1.0, bAdd, vocab);
+        
+        addFeature(v,"FP33-" + sLemmq1, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"FP34-" + sLemmq2, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"FP35-" + sLemms0, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"FP36-" + sLemms1, sAct, 1.0, bAdd, vocab);
+        
         return spqf1;
     }
 
     static void setTagSyntacticFeatures(
             IntFeatVector v, Vocab vocab, boolean bAdd, String sAct,
-            String sfst0, String sfqf1, String spst0, String spst1, String spst0lc) {
+            String sfst0, String sfqf1, String spst0, String spst1, String spst0lc, String sLemmq1, String sLemmq2, String sLemms0, String sLemms1) {
         final int ln_sfst0 = sfst0.length();
         final char c_sfst0_b = sfst0.charAt(0);
         final char c_sfst0_e = sfst0.charAt(ln_sfst0 - 1);
@@ -384,5 +412,9 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         addFeature(v, "SF05-" + c_sfst0_e, sAct, 1.0, bAdd, vocab);
         addFeature(v, "SF06-" + c_sfst0_e + sfqf1, sAct, 1.0, bAdd, vocab);
         addFeature(v, "SF07-" + spst1 + SEP + spst0 + SEP + sfqf1, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"SF08-" + sLemmq1, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"SF09-" + sLemmq2, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"SF10-" + sLemms0, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"SF11-" + sLemms1, sAct, 1.0, bAdd, vocab);
     }
 }
