@@ -36,9 +36,9 @@ public class DepTree extends DepWord {
 
     public final List<DepTree> children;
 
-    public DepTree(DepTreeSentence sent, int index, String form, String pos,
+    public DepTree(DepTreeSentence sent, int index, String form, String pos,String lemm,
             int head) {
-        super(sent, index, form, pos, head);
+        super(sent, index, form, pos,lemm, head);
         children = new ArrayList<>();
     }
 
