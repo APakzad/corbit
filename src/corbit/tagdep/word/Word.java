@@ -33,10 +33,12 @@ public class Word {
 
     public String form;
     public String pos;
+    public String lemm;
 
-    public Word(String form, String pos) {
+    public Word(String form, String pos , String lemm) {
         this.form = form;
         this.pos = pos;
+        this.lemm=lemm;
     }
 
     @Override
