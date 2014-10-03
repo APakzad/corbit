@@ -65,7 +65,9 @@ public class CoNLLReader extends ParseReader {
                 dw.index = iIndex;
                 dw.form = sForm;
                 dw.pos = cpos;
+                dw.lemm=lemma;
                 dw.head = iHead;
+                dw.dependency=dependency;
 
                 if (j != iIndex) {
                     Console.writeLine(String.format("Illegal index at line %d. Skipping.", iSentence));
