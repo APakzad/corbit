@@ -89,7 +89,7 @@ public class SRParserStateGenerator {
                 new LinkedList<PDAction>(),
                 true, 1);
 
-        s.pstck[0] = new DepTree(s.sent, -1, "ROOT", "ROOT", -2);
+        s.pstck[0] = new DepTree(s.sent, -1, "ROOT", "ROOT","ROOT", -2,"ROOT");
         for (int i = 0; i < sent.size(); ++i) {
             // s.pos[i] = sent.get(i).pos;
             s.heads[i] = sent.get(i).head;
