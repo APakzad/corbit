@@ -86,8 +86,15 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
         static final int F_lemmq2=38;
         static final int F_lemms0=39;
         static final int F_lemms1=40;
+        static final int F_lemm_wst0lc1=41;
+        static final int F_lemm_wst0rc1=42;
+        static final int F_lemm_wst0lc2=43;
+        static final int F_lemm_wst1rc1=44;
         
-        static final int NUM_FEATURE = 41;
+        static final int F_L_qp1 = 45;
+        static final int F_L_qf1 = 46;
+        static final int F_L_qf2 = 47;
+        static final int NUM_FEATURE = 48;
 
         AtomsZN11(
                 int curidx,
@@ -98,15 +105,15 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
                 int idx_st1,
                 String f_st0,
                 String f_st1,
-                String f_qp1,
-                String f_qf1,
+                String f_qp1, String L_qp1,
+                String f_qf1, String L_qf1,
                 String p_st0,
                 String p_st1,
                 String p_st2,
                 String p_qp2,
                 String p_qp1,
                 String p_qf1,
-                String p_qf2,
+                String p_qf2,String L_qf2,
                 String p_st0rc,
                 String p_st0lc,
                 String p_st1rc,
@@ -131,7 +138,10 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
                 String sLemmq1,
                 String sLemmq2,
                 String sLemms0,
-                String sLemms1) {
+                String sLemms1,
+                String sLemm_wst0lc1,
+                String sLemm_wst0rc1,
+                String sLemm_wst0lc2, String sLemm_wst1rc1) {
             super(NUM_FEATURE, fvdelay);
             features[F_curidx] = Integer.toString(curidx);
             features[F_span_bgn] = Integer.toString(span_bgn);
@@ -142,7 +152,9 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
             features[F_f_st0] = f_st0;
             features[F_f_st1] = f_st1;
             features[F_f_qp1] = f_qp1;
+            features[F_L_qp1] = L_qp1;
             features[F_f_qf1] = f_qf1;
+            features[F_L_qf1] = L_qf1;
             features[F_p_st0] = p_st0;
             features[F_p_st1] = p_st1;
             features[F_p_st2] = p_st2;
@@ -150,6 +162,7 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
             features[F_p_qp1] = p_qp1;
             features[F_p_qf1] = p_qf1;
             features[F_p_qf2] = p_qf2;
+            features[F_L_qf2] = L_qf2;
             features[F_p_st0rc] = p_st0rc;
             features[F_p_st0lc] = p_st0lc;
             features[F_p_st1rc] = p_st1rc;
@@ -174,6 +187,10 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
             features[F_lemmq2]=sLemmq2;
             features[F_lemms0]=sLemms0;
             features[F_lemms1]=sLemms1;
+            features[F_lemm_wst0lc1]=sLemm_wst0lc1;
+            features[F_lemm_wst0rc1]=sLemm_wst0rc1;
+            features[F_lemm_wst0lc2]=sLemm_wst0lc2;
+            features[F_lemm_wst1rc1]=sLemm_wst1rc1;
             setHash();
         }
     }
@@ -209,11 +226,19 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
         String sfst0 = wst0.form;
         String sfst1 = wst1 != null ? wst1.form : OOR;
         String sfqp1 = idx > 0 ? s0.sent.get(idx - 1).form : OOR;
+        String sLqp1 = idx > 0 ? s0.sent.get(idx - 1).lemm : OOR;
+        
         String sfqf1 = idx < s0.sent.size() ? s0.sent.get(idx).form : OOR;
+        String sLqf1 = idx < s0.sent.size() ? s0.sent.get(idx).lemm : OOR;
+        
         String sLemmq1 = idx < s0.sent.size() ? s0.sent.get(idx).lemm : OOR;
         String sLemmq2 = idx < s0.sent.size()-1 ? s0.sent.get(idx+1).lemm : OOR;
         String sLemms0 = wst0.lemm;
-        String sLemms1 = wst1.lemm;
+        String sLemms1 = wst1 != null ? wst1.lemm : OOR;
+        String sLemm_wst0lc1= wst0lc1 != null ? wst0lc1.lemm : null;
+        String sLemm_wst0rc1= wst0rc1 != null ? wst0rc1.lemm : null;
+        String sLemm_wst0lc2= wst0lc2 != null ? wst0lc2.lemm : null;
+        String sLemm_wst1rc1= wst1rc1 != null ? wst1rc1.lemm : null;
         
         String spst0 = wst0.pos;
         String spst1 = wst1 != null ? wst1.pos : OOR;
@@ -222,6 +247,8 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
         String spqp2 = idx > 1 ? (s0.idbgn <= idx - 2) ? s0.pos[idx - 2] : s1.pos[idx - 2] : OOR;
         String spqf1 = idx < s0.sent.size() ? s0.sent.get(idx).pos : OOR;
         String spqf2 = idx < s0.sent.size() - 1 ? s0.sent.get(idx + 1).pos : OOR;
+        String sLqf2 = idx < s0.sent.size() - 1 ? s0.sent.get(idx + 1).lemm : OOR;
+        
         String spst0rc1 = wst0rc1 != null ? s0.pos[wst0rc1.index] : OOR;
         String spst0lc1 = wst0lc1 != null ? s0.pos[wst0lc1.index] : OOR;
         String spst1rc1 = wst1rc1 != null ? s1.pos[wst1rc1.index] : OOR;
@@ -273,15 +300,15 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
                 wst1 != null ? wst1.index : -2,
                 sfst0,
                 sfst1,
-                sfqp1,
-                sfqf1,
+                sfqp1,sLqp1,
+                sfqf1,sLqf1,
                 spst0,
                 spst1,
                 spst2,
                 spqp2,
                 spqp1,
                 spqf1,
-                spqf2,
+                spqf2,sLqf2,
                 spst0rc1,
                 spst0lc1,
                 spst1rc1,
@@ -303,7 +330,7 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
                 spst1lc2,
                 spst1rc2,
                 s0.fvdelay != null ? new TreeSet<>(s0.fvdelay) : null,
-                sLemmq1, sLemmq2, sLemms0, sLemms1);
+                sLemmq1, sLemmq2, sLemms0, sLemms1, sLemm_wst0lc1, sLemm_wst0rc1, sLemm_wst0lc2, sLemm_wst1rc1);
     }
 
     @Override
@@ -313,7 +340,9 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
         String sfst0 = s0.atoms.get(AtomsZN11.F_f_st0);
         String sfst1 = s0.atoms.get(AtomsZN11.F_f_st1);
         String sfqp1 = s0.atoms.get(AtomsZN11.F_f_qp1);
+        String sLqp1 = s0.atoms.get(AtomsZN11.F_L_qp1);
         String sfqf1 = s0.atoms.get(AtomsZN11.F_f_qf1);
+        String sLqf1 = s0.atoms.get(AtomsZN11.F_L_qf1);
         String spst0 = s0.atoms.get(AtomsZN11.F_p_st0);
         String spst1 = s0.atoms.get(AtomsZN11.F_p_st1);
         String spst2 = s0.atoms.get(AtomsZN11.F_p_st2);
@@ -321,6 +350,7 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
         String spqp2 = s0.atoms.get(AtomsZN11.F_p_qp2);
         String spqf1 = s0.atoms.get(AtomsZN11.F_p_qf1);
         String spqf2 = s0.atoms.get(AtomsZN11.F_p_qf2);
+        String sLqf2 = s0.atoms.get(AtomsZN11.F_L_qf2);
         String spst0rc = s0.atoms.get(AtomsZN11.F_p_st0rc);
         String spst0lc = s0.atoms.get(AtomsZN11.F_p_st0lc);
         String spst1rc = s0.atoms.get(AtomsZN11.F_p_st1rc);
@@ -345,6 +375,10 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
         String sLemmq2=s0.atoms.get(AtomsZN11.F_lemmq2);
         String sLemms0=s0.atoms.get(AtomsZN11.F_lemms0);
         String sLemms1=s0.atoms.get(AtomsZN11.F_lemms1);
+        String sLemm_wst0lc1=s0.atoms.get(AtomsZN11.F_lemm_wst0lc1);
+        String sLemm_wst0rc1=s0.atoms.get(AtomsZN11.F_lemm_wst0rc1);
+        String sLemm_wst0lc2=s0.atoms.get(AtomsZN11.F_lemm_wst0lc2);
+        String sLemm_wst1rc1=s0.atoms.get(AtomsZN11.F_lemm_wst1rc1);
         
         int curidx = s0.curidx;
         final int szSent = s0.sent.size();
@@ -362,10 +396,10 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
          *  parsing features
          */
 
-        if (act == PDAction.REDUCE_LEFT || act == PDAction.REDUCE_RIGHT || act == PDAction.SHIFT || act.isShiftPosAction()) {
-            SRParserCtbHandlerHS10.setParseFeaturesHS10(v, vd, m_vocab, bAdd, sAct, sfst0, sfst1, sfqf1, spst0, spst1, spst2, spqf1, spqf2, spst0rc, spst0lc, spst1rc, spst1lc, sPunct, sAdjoin,sLemmq1,sLemmq2 ,sLemms0 ,sLemms1 , curidx, szSent, m_params.m_bUseLookAhead);
+        if (act.isReduceLeft() || act.isReduceRight() || act == PDAction.SHIFT || act.isShiftPosAction()) {
+            SRParserCtbHandlerHS10.setParseFeaturesHS10(v, vd, m_vocab, bAdd, sAct, sfst0, sfst1, sfqf1,sLqf1, spst0, spst1, spst2, spqf1, spqf2,sLqf2, spst0rc, spst0lc, spst1rc, spst1lc, sPunct, sAdjoin,sLemmq1,sLemmq2 ,sLemms0 ,sLemms1,sLemm_wst0lc1,sLemm_wst0rc1 ,sLemm_wst0lc2 ,sLemm_wst1rc1, curidx, szSent, m_params.m_bUseLookAhead);
             SRParserCtbHandlerZN11.setParseFeaturesZN11(v, m_vocab, sAct, bAdd, sfst0, sfst1, spst0, spst1, spst0lc, spst1rc, spst1lc, sDist, sVal0l, sVal1l, sVal1r, sfst0lc, sfst1lc, sfst1rc, sfst0lc2, sfst1lc2, sfst1rc2,
-                    spst0lc2, spst1lc2, spst1rc2, sLemmq1, sLemmq2, sLemms0, sLemms1);
+                    spst0lc2, spst1lc2, spst1rc2, sLemmq1, sLemmq2, sLemms0, sLemms1, sLemm_wst0lc1, sLemm_wst0rc1, sLemm_wst0lc2, sLemm_wst1rc1);
         }
 
         /*
@@ -382,9 +416,9 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
          */
 
         if (m_params.m_bUseTagFeature && act.isShiftPosAction()) {
-            SRParserCtbHandlerZC08.setTagFeaturesZC08(v, m_vocab, m_dict, bAdd, sAct, sfqp1, sfqf1, sfqf2, spqp1, spqp2);
+            SRParserCtbHandlerZC08.setTagFeaturesZC08(v, m_vocab, m_dict, bAdd, sAct, sfqp1,sLqp1, sfqf1,sLqf1, sfqf2, spqp1, spqp2);
             if (m_params.m_bUseSyntax) {
-                SRParserCtbHandlerHS10.setTagSyntacticFeatures(v, m_vocab, bAdd, sAct, sfst0, sfqf1, spst0, spst1, spst0lc, sLemmq1, sLemmq2, sLemms0, sLemms1);
+                SRParserCtbHandlerHS10.setTagSyntacticFeatures(v, m_vocab, bAdd, sAct, sfst0, sfqf1, spst0, spst1, spst0lc, sLemmq1, sLemmq2, sLemms0, sLemms1, sLemm_wst0lc1, sLemm_wst0rc1, sLemm_wst0lc2 , sLemm_wst1rc1);
             }
         }
 
@@ -402,7 +436,7 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
             String sVal0l, String sVal1l, String sVal1r,
             String sfst0lc, String sfst1lc, String sfst1rc, String sfst0lc2,
             String sfst1lc2, String sfst1rc2, String spst0lc2, String spst1lc2,
-            String spst1rc2, String sLemmq1, String sLemmq2, String sLemms0 ,String sLemms1) {
+            String spst1rc2, String sLemmq1, String sLemmq2, String sLemms0 ,String sLemms1, String sLemm_wst0lc1, String sLemm_wst0rc1, String sLemm_wst0lc2, String sLemm_wst1rc1) {
         // distance
         addFeature(v, "FP20-" + sfst1 + SEP + sDist, sAct, 1.0, bAdd, vocab);
         addFeature(v, "FP21-" + spst1 + SEP + sDist, sAct, 1.0, bAdd, vocab);
@@ -442,5 +476,9 @@ public class SRParserCtbHandlerZN11 extends SRParserHandler {
         addFeature(v, "FP60-" + sLemmq2, sAct, 1.0, bAdd, vocab);
         addFeature(v, "FP61-" + sLemms0, sAct, 1.0, bAdd, vocab);
         addFeature(v, "FP62-" + sLemms1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "FP62-" + sLemm_wst0lc1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "FP63-" + sLemm_wst0rc1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "FP64-" + sLemm_wst0lc2, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "FP65-" + sLemm_wst1rc1, sAct, 1.0, bAdd, vocab);
     }
 }
