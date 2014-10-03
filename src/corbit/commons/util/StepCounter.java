@@ -49,13 +49,13 @@ public class StepCounter {
 
     public void increment() {
         ++iCount;
-        if (iFrequency > 0 && (iCount % iFrequency == 0)) {
+        /*if (iFrequency > 0 && (iCount % iFrequency == 0)) {
             if (iCount % (iFrequency * 20) == 0) {
                 System.out.println(String.format("%5d", iCount));
             } else {
                 System.out.print(String.format("%3d ", iCount / iFrequency));
             }
-        }
+        }*/
 
     }
 
