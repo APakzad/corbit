@@ -42,12 +42,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -257,7 +257,7 @@ public abstract class TagDictionary implements Serializable {
 
     public String[] getTagCandidates(String sForm, int iLength) {
         boolean bLoaded = m_freqTagDict.size() > 0;
-        List<String> ls = new ArrayList<>();
+        List<String> ls = new LinkedList<>();
         for (String sTag : getTagCandidates(sForm)) {
             if (!bLoaded || iLength <= m_tagWordLength[m_tagIndex.get(sTag)]) {
                 ls.add(sTag);
@@ -295,7 +295,7 @@ public abstract class TagDictionary implements Serializable {
     }
 
     public void listOpenTagsByLength() {
-        List<Set<String>> _openTagsByLen = new ArrayList<>(maxWordLength);
+        List<Set<String>> _openTagsByLen = new LinkedList<>();
         for (int i = 0; i < maxWordLength; ++i) {
             _openTagsByLen.add(new HashSet<String>());
         }
@@ -322,9 +322,9 @@ public abstract class TagDictionary implements Serializable {
         try (BufferedReader sr = new BufferedReader(
                 new InputStreamReader(
                     new FileInputStream(sFile), "UTF-8"))) {
-            List<String> lsAllTags = new ArrayList<>();
-            List<String> lsClosedTags = new ArrayList<>();
-            List<String> lsFreqTags = new ArrayList<>();
+            List<String> lsAllTags = new LinkedList<>();
+            List<String> lsClosedTags = new LinkedList<>();
+            List<String> lsFreqTags = new LinkedList<>();
 
             while ((sLine = sr.readLine()) != null) {
                 sLine = Statics.trimSpecial(sLine);
