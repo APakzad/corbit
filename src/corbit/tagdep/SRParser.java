@@ -65,6 +65,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -153,7 +154,7 @@ public class SRParser extends SRParserParameters {
     double iterateOnce(String sFile, String sRefFile, boolean bTrain, String sParseFile) 
             throws IOException {
         ParseReader ct = getReader(sFile);
-        List<DepTreeSentence> lt = new ArrayList<>();
+        List<DepTreeSentence> lt = new LinkedList<>();
         for (DepTreeSentence p : ct) {
             if (p != null) {
                 lt.add(p);
@@ -163,7 +164,7 @@ public class SRParser extends SRParserParameters {
 
         List<DepTreeSentence> lr = null;
         if (sRefFile != null) {
-            lr = new ArrayList<>();
+            lr = new LinkedList<>();
             ParseReader cr = getReader(sFile);
             for (DepTreeSentence p : cr) {
                 if (p != null) {
@@ -203,8 +204,8 @@ public class SRParser extends SRParserParameters {
             }
         }
 
-        IntFeatVector getPrefixFeatures(SRParserState s) {
-            return trans.getPrefixFeatures(s);
+        IntFeatVector getPrefixFeatures(SRParserState s, DepTreeSentence gsent) {
+            return trans.getPrefixFeatures(s, gsent);
         }
 
         ParseResult parseSentence(DepTreeSentence gsent) {
@@ -283,7 +284,7 @@ public class SRParser extends SRParserParameters {
         final int iParallel = bTrain ? m_bAggressiveParallel ? m_iParallel : 1 : gsents.size();
 
         final SentenceParser parser = new SentenceParser(bTrain, bParallelMove);
-        List<Future<ParseResult>> lOuts = new ArrayList<>();
+        List<Future<ParseResult>> lOuts = new LinkedList<>();
 
         try {
             for (int iPhase = 0; iPhase < gsents.size() / iParallel + 1; ++iPhase) {
@@ -295,7 +296,7 @@ public class SRParser extends SRParserParameters {
 
                 for (int iSent = iPhase * iParallel; iSent < (iPhase + 1) * iParallel && iSent < gsents.size(); ++iSent) {
                     final DepTreeSentence gsent = gsents.get(iSent);
-
+                    parser.parseSentence(gsent);
                     lOuts.add(execSent.submit(new Callable<ParseResult>() {
                         @Override
                         public ParseResult call() {
@@ -334,11 +335,13 @@ public class SRParser extends SRParserParameters {
                     if (m_bShowStats) {
                         eval.evalAction(so, sg);
                     }
+                    
                     boolean bResult = (rsent == null) ? eval.evalSentence(osent, gsent) : eval.evalSegmentedSentence(osent, rsent);
+                    
 
                     if (bTrain && !bResult && sg != null) {//???????? && sg != null????????????
-                        IntFeatVector vg = parser.getPrefixFeatures(sg);
-                        IntFeatVector vo = parser.getPrefixFeatures(so);
+                        IntFeatVector vg = parser.getPrefixFeatures(sg, gsent);
+                        IntFeatVector vo = parser.getPrefixFeatures(so, gsent);
                         IntFeatVector vd = IntFeatVector.subtract(vg, vo);
                         vdTotal.append(vd);
                     }
@@ -429,12 +432,12 @@ public class SRParser extends SRParserParameters {
                     System.err.println("POS tags are required when --assign-gold option is used.");
                     continue main;
                 }
-                sent.add(new DepTree(sent, i, word[0], m_bAssignGoldPos && word.length > 1 ? word[1] : null, -2));
+                sent.add(new DepTree(sent, i, word[0], m_bAssignGoldPos && word.length > 1 ? word[1] : null,null, -2,null));
             }
             ParseResult pr = sp.parseSentence(sent);
             DepTreeSentence osent = SRParserState.getParsedResult(pr.parsedState);
             for (DepTree dw : osent) {
-                Console.writeLine(String.format("%d\t%s\t%s\t%d", dw.index, dw.form, dw.pos, dw.head));
+                Console.writeLine(String.format("%d\t%s\t%s\t%d", dw.index, dw.form, dw.pos, dw.head, dw.dependency));
             }
             Console.writeLine();
             if (++n % 100 == 0) {
@@ -524,13 +527,13 @@ public class SRParser extends SRParserParameters {
             final boolean bAdd,
             ExecutorService exec) {
         boolean bAnyUpdated = false;
-        List<Future<Pair<Boolean, List<SRParserState>>>> outs = new ArrayList<>();
+        List<Future<Pair<Boolean, List<SRParserState>>>> outs = new LinkedList<>();
 
         for (final SRParserState s : cchart.keySet()) {
             outs.add(exec.submit(new Callable<Pair<Boolean, List<SRParserState>>>() {
                 @Override
                 public Pair<Boolean, List<SRParserState>> call() {
-                    List<SRParserState> lOut = new ArrayList<>();
+                    List<SRParserState> lOut = new LinkedList<>();
                     boolean bAnyUpdated = false;
                     for (Pair<PDAction, SRParserState> p : trans.moveNext(s, gsent, bAdd)) {
                         lOut.add(p.second);
@@ -556,7 +559,8 @@ public class SRParser extends SRParserParameters {
         }
 
         if (nchart.size() == 0) {
-            throw new RuntimeException("Unexpected error: no next state found.");
+            System.out.println("************************: no next state found");
+            //throw new RuntimeException("Unexpected error: no next state found.");
         }
 
         return bAnyUpdated;
@@ -588,9 +592,9 @@ public class SRParser extends SRParserParameters {
                 nchart.updateEntry(pv);
             }
         }
-        if (nchart.size() == 0) {
-            throw new RuntimeException("Unexpected error: no next state found.");
-        }
+//        if (nchart.size() == 0) {
+//            throw new RuntimeException("Unexpected error: no next state found.");
+//        }
         return bAnyUpdated;
     }
 
@@ -608,7 +612,7 @@ public class SRParser extends SRParserParameters {
     DepTreeSentence createSentenceToProcess(DepTreeSentence gsent) {
         DepTreeSentence sent = new DepTreeSentence();
         for (DepTree dw : gsent) {
-            sent.add(new DepTree(sent, dw.index, dw.form, m_bUseGoldPos ? dw.pos : null, -2));
+            sent.add(new DepTree(sent, dw.index, dw.form, m_bUseGoldPos ? dw.pos : null,dw.lemm, -2, null));
         }
         // sent.add(new DepTree(sent, dw.index, dw.form, null, -2));
         return sent;
@@ -616,6 +620,7 @@ public class SRParser extends SRParserParameters {
 
     public void loadDictFromFile(String sFile, int iThreshold) throws IOException {
         m_dict.clear();
+        
         m_dict.loadFromFile(sFile, iThreshold);
         m_fhandler.setTagDictionary(m_dict);
     }
