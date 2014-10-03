@@ -29,11 +29,12 @@
  */
 package corbit.commons.word;
 
-import java.util.ArrayList;
+
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
-public class ParsedSentence extends ArrayList<IndexWord> {
+public class ParsedSentence extends LinkedList<IndexWord> {
 
     private static final long serialVersionUID = 1L;
     UnsegmentedSentence sequence = null;
@@ -122,12 +123,12 @@ public class ParsedSentence extends ArrayList<IndexWord> {
     void createIndex() {
         final int size = size();
         bounds = new int[size];
-        childs = new ArrayList<>(size);
+        childs = new LinkedList<>();
         int curidx = 0;
         for (int i = 0; i < size; ++i) {
             curidx += get(i).form.length();
             bounds[i] = curidx;
-            childs.add(new ArrayList<IndexWord>());
+            childs.add(new LinkedList<IndexWord>());
         }
         for (int i = 0; i < size; ++i) {
             IndexWord dw = get(i);
