@@ -29,7 +29,8 @@
  */
 package corbit.tagdep.word;
 
-import java.util.ArrayList;
+
+import java.util.LinkedList;
 import java.util.List;
 
 public class DepTree extends DepWord {
@@ -37,24 +38,24 @@ public class DepTree extends DepWord {
     public final List<DepTree> children;
 
     public DepTree(DepTreeSentence sent, int index, String form, String pos,String lemm,
-            int head) {
-        super(sent, index, form, pos,lemm, head);
-        children = new ArrayList<>();
+            int head,String dependency) {
+        super(sent, index, form, pos,lemm, head, dependency);
+        children = new LinkedList<>();
     }
 
     public DepTree(DepTree t) {
         super(t);
-        children = new ArrayList<>(t.children);
+        children = new LinkedList<>(t.children);
     }
 
     public DepTree(DepWord w) {
         super(w);
-        children = new ArrayList<>();
+        children = new LinkedList<>();
     }
 
     public DepTree() {
         super();
-        children = new ArrayList<>();
+        children = new LinkedList<>();
     }
 
     @Override
