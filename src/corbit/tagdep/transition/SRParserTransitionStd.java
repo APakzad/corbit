@@ -40,7 +40,7 @@ import corbit.tagdep.dict.TagDictionary;
 import corbit.tagdep.handler.SRParserHandler;
 import corbit.tagdep.word.DepTree;
 import corbit.tagdep.word.DepTreeSentence;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -55,6 +55,8 @@ public class SRParserTransitionStd extends SRParserTransition {
     boolean m_bAssignGoldPos;
     boolean m_bIndepSPActions;
     int m_iLookaheadDepth = 0;
+    
+    public String DepTag=null;
 
     public SRParserTransitionStd(SRParserStateGenerator sg, SRParserHandler fh, WeightVector w, TagDictionary d,
             boolean bParse, boolean bReduceFollowsShift, boolean bAssignGoldPos, boolean bIndepSPActions) {
@@ -67,7 +69,7 @@ public class SRParserTransitionStd extends SRParserTransition {
     @Override
     public Pair<PDAction, SRParserState> moveNextGold(SRParserState s, DepTreeSentence gsent, boolean bAdd) {
         PDAction act = getGoldAction(s, gsent);
-        List<SRParserState> ls = moveNext(s, act, true, bAdd);
+        List<SRParserState> ls = moveNext(s, gsent, act, true, bAdd);
         SRParserState sGold = null;
 
         for (SRParserState sNext : ls) {
@@ -85,11 +87,11 @@ public class SRParserTransitionStd extends SRParserTransition {
 
     @Override
     public List<Pair<PDAction, SRParserState>> moveNext(SRParserState s, DepTreeSentence gsent, boolean bAdd) {
-        List<Pair<PDAction, SRParserState>> l = new ArrayList<>();
+        List<Pair<PDAction, SRParserState>> l = new LinkedList<>();
         PDAction goldAct = gsent != null ? getGoldAction(s, gsent) : PDAction.NOT_AVAILABLE;
 
         for (PDAction act : getNextActions(s, m_bAssignGoldPos ? gsent : null)) {
-            for (SRParserState sNext : moveNext(s, act, act.shallowEquals(goldAct), bAdd)) // TODO: shallow unnecessary
+            for (SRParserState sNext : moveNext(s, gsent, act, act.shallowEquals(goldAct), bAdd)) // TODO: shallow unnecessary
             {
                 l.add(new Pair<>(act, sNext));
             }
@@ -120,14 +122,21 @@ public class SRParserTransitionStd extends SRParserTransition {
                 if ((ws1.index != -1 || s.curidx == s.sent.size())
                         && gsent.get(ws0.index).head == ws1.index
                         && gsent.get(ws0.index).children.size() == ws0.children.size()) {
-                    return PDAction.REDUCE_RIGHT;
+                    
+                    DepTag = gsent.get(ws0.index).dependency;//افزوده شده
+                    
+                    return PDAction.getRRAction(DepTag);// تغییر داده شده
+                    
                 } else if (ws1.index != -1 && ws0.index == gsent.get(ws1.index).head) {
-                    return PDAction.REDUCE_LEFT;
+                    
+                    DepTag = gsent.get(ws1.index).dependency;// افزوده شده
+                    
+                    return PDAction.getRLAction(DepTag);
                 }
             }
 
             if (s.curidx == s.sent.size()) {
-                Console.writeLine("No gold action found: " + s);
+                //Console.writeLine("No gold action found: " + s);
                 return PDAction.NOT_AVAILABLE;
             }
 
@@ -142,7 +151,8 @@ public class SRParserTransitionStd extends SRParserTransition {
     List<PDAction> getNextActions(SRParserState s, DepTreeSentence gsent) {
         assert (m_bAssignGoldPos || gsent == null);
 
-        List<PDAction> l = new ArrayList<>();
+        List<PDAction> l = new LinkedList<>();
+        
         if (isEnd(s)) {
             l.add(PDAction.END_STATE);
             return l;
@@ -150,7 +160,7 @@ public class SRParserTransitionStd extends SRParserTransition {
 
         DepTree ws0 = s.pstck[0];
         DepTree ws1 = s.pstck[1];
-
+        String str = null;
         if (!m_bAssignPosFollowsShift
                 && ws0.index != -1
                 && s.pos[ws0.index] == null) // if m_bUseGoldPos == true, this pos is already assigned and shift action is omitted.
@@ -168,7 +178,9 @@ public class SRParserTransitionStd extends SRParserTransition {
                     if (m_bAssignGoldPos) {
                         l.add(PDAction.getShiftPosAction(gsent.get(s.curidx).pos));
                     } else {
-                        for (String spqf1 : m_dict.getTagCandidates(s.sent.get(s.curidx).form)) {
+                        str = s.sent.get(s.curidx).form; 
+                        //System.out.println("form1:"+str);
+                        for (String spqf1 : m_dict.getTagCandidates(str)) {
                             l.add(PDAction.getShiftPosAction(spqf1));
                         }
                     }
@@ -176,12 +188,23 @@ public class SRParserTransitionStd extends SRParserTransition {
                     l.add(PDAction.SHIFT);
                 }
             }
-
-            if (m_bParse && ws1 != null) {
-                l.add(PDAction.REDUCE_LEFT);
-                l.add(PDAction.REDUCE_RIGHT);
-            }
+            if(s.sent.size() > s.curidx){
+                str = s.sent.get(s.curidx).form;
+                //System.out.println("form:"+str);
+                String tmp[] = m_dict.getDepTagCandidates(str);
+                String depTag=null;
+                if (m_bParse && ws1 != null ) {
+                for(int count=0; count<tmp.length; count++ ){
+                    depTag=tmp[count];
+                    l.add(PDAction.getRLAction(depTag));
+                    l.add(PDAction.getRRAction(depTag));
+                }
+                
+                }
+           }
+           
         }
+        
         assert (!l.contains(null));
         return l;
     }
@@ -191,14 +214,18 @@ public class SRParserTransitionStd extends SRParserTransition {
 //		m_trans.clear();
     }
 
-    List<SRParserState> moveNext(SRParserState s, PDAction act, boolean isGoldAct, boolean bAdd) {
+    List<SRParserState> moveNext(SRParserState s, DepTreeSentence gsent, PDAction act, boolean isGoldAct, boolean bAdd) {
         List<SRParserState> l;
-        if (act == PDAction.REDUCE_RIGHT) {
-            l = reduceRight(s, isGoldAct, bAdd);
-        } else if (act == PDAction.REDUCE_LEFT) {
-            l = reduceLeft(s, isGoldAct, bAdd);
+        String depTag = null;
+        
+        if (act.isReduceRight()) {
+            depTag=act.toString().substring(act.toString().indexOf("-")+1);
+            l = reduceRight(s, depTag, isGoldAct, bAdd);
+        } else if (act.isReduceLeft()) {
+            depTag=act.toString().substring(act.toString().indexOf("-")+1);
+            l = reduceLeft(s, depTag, isGoldAct, bAdd);
         } else {
-            l = new ArrayList<>();
+            l = new LinkedList<>();
             if (act == PDAction.END_STATE || act == PDAction.PENDING) {
                 l.add(s);
             } else if (act == PDAction.SHIFT) {
@@ -317,14 +344,14 @@ public class SRParserTransitionStd extends SRParserTransition {
                 _lstact, s.gold && bGoldAct, s.nstates);
     }
 
-    List<SRParserState> reduceRight(SRParserState s, boolean bGoldAct, boolean bAdd) {
-        List<SRParserState> l = new ArrayList<>();
+    List<SRParserState> reduceRight(SRParserState s,String DepTag, boolean bGoldAct, boolean bAdd) {
+        List<SRParserState> l = new LinkedList<>();
         if (s.pstck[0].index != -1 && s.pos[s.pstck[0].index] == null) {
             return l;
         }
 
         List<String> _fvdelay = s.fvdelay != null ? new LinkedList<>(s.fvdelay) : null;
-        IntFeatVector vr = m_fhandler.getFeatures(s, PDAction.REDUCE_RIGHT, _fvdelay, bAdd);
+        IntFeatVector vr = m_fhandler.getFeatures(s, PDAction.getRRAction(DepTag), _fvdelay, bAdd);
         double sr = m_weight.score(vr);
         if (!bAdd) {
             vr = null;
@@ -354,10 +381,10 @@ public class SRParserTransitionStd extends SRParserTransition {
             DepTree h = new DepTree(p.pstck[0]);
             DepTree c = new DepTree(s.pstck[0]);
             _pstck[0] = h;
-
+            
             h.children.add(c);
             c.head = h.index;
-
+            c.dependency=DepTag;
             int[] _heads = Arrays.copyOf(s.heads, s.heads.length);
             for (int i = 0; i < p.heads.length; ++i) {
                 if (p.heads[i] != -2) {
@@ -375,7 +402,7 @@ public class SRParserTransitionStd extends SRParserTransition {
 
             List<PDAction> _lstact = new LinkedList<>(p.lstact);
             _lstact.addAll(s.lstact);
-            _lstact.add(PDAction.REDUCE_RIGHT);
+            _lstact.add(PDAction.getRRAction(DepTag));
 
             l.add(m_generator.generate(s.sent, _pstck, s.curidx, Math.max(p.idbgn, 0), s.idend,
                     _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos, _fvdelay,
@@ -384,14 +411,14 @@ public class SRParserTransitionStd extends SRParserTransition {
         return l;
     }
 
-    List<SRParserState> reduceLeft(SRParserState s, boolean bGoldAct, boolean bAdd) {
-        List<SRParserState> l = new ArrayList<>();
+    List<SRParserState> reduceLeft(SRParserState s,String DepTag, boolean bGoldAct, boolean bAdd) {
+        List<SRParserState> l = new LinkedList<>();
         if (s.pstck[0].index != -1 && s.pos[s.pstck[0].index] == null) {
             return l;
         }
 
         List<String> _fvdelay = s.fvdelay != null ? new LinkedList<>(s.fvdelay) : null;
-        IntFeatVector vr = m_fhandler.getFeatures(s, PDAction.REDUCE_LEFT, _fvdelay, bAdd);
+        IntFeatVector vr = m_fhandler.getFeatures(s, PDAction.getRLAction(DepTag), _fvdelay, bAdd);
         double sr = m_weight.score(vr);
         if (!bAdd) {
             vr = null;
@@ -420,9 +447,10 @@ public class SRParserTransitionStd extends SRParserTransition {
             DepTree c = new DepTree(p.pstck[0]);
             _pstck[0] = h;
 
+           
             h.children.add(c);
             c.head = h.index;
-
+            c.dependency=DepTag;
             int[] _heads = Arrays.copyOf(s.heads, s.heads.length);
             for (int i = 0; i < p.heads.length; ++i) {
                 if (p.heads[i] != -2) {
@@ -440,7 +468,7 @@ public class SRParserTransitionStd extends SRParserTransition {
 
             List<PDAction> _lstact = new LinkedList<>(p.lstact);
             _lstact.addAll(s.lstact);
-            _lstact.add(PDAction.REDUCE_LEFT);
+            _lstact.add(PDAction.getRLAction(DepTag));
 
             l.add(m_generator.generate(s.sent, _pstck, s.curidx, Math.max(p.idbgn, 0), s.idend,
                     _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos, _fvdelay,
@@ -450,7 +478,7 @@ public class SRParserTransitionStd extends SRParserTransition {
     }
 
     @Override
-    public IntFeatVector getPrefixFeatures(SRParserState s) {
+    public IntFeatVector getPrefixFeatures(SRParserState s, DepTreeSentence gsent) {
         // if (s.fvprf != null) return s.fvprf; // cache
         //
         // IntFeatVector fvprf1 = new IntFeatVector();
@@ -468,7 +496,8 @@ public class SRParserTransitionStd extends SRParserTransition {
         List<PDAction> lAct = s.getActionSequence();
         SRParserState s3 = m_generator.create(s.sent);
         for (PDAction act : lAct) {
-            s3 = moveNext(s3, act, false, true).get(0);
+            moveNext(s3, gsent, act, false, true);
+            s3 = moveNext(s3, gsent, act, false, true).get(0);
         }
         SRParserState sss1 = s3;
         for (SRParserState sss2 = sss1; sss2 != null; sss2 = sss2.pred0) {
