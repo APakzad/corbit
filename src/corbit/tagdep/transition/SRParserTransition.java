@@ -65,7 +65,7 @@ public abstract class SRParserTransition {
 
     public abstract Pair<PDAction, SRParserState> moveNextGold(SRParserState s, DepTreeSentence gsent, boolean bAdd);
 
-    public abstract IntFeatVector getPrefixFeatures(SRParserState s);
+    public abstract IntFeatVector getPrefixFeatures(SRParserState s, DepTreeSentence gsent);
 
     public abstract void clear();
 
