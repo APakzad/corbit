@@ -11,7 +11,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the names of the authors nor the names of its contributors
+ *     * Neither the9 names of the authors nor the names of its contributors
  *       may be used to endorse or promote products derived from this
  *       software without specific prior written permission.
  *
@@ -36,29 +36,45 @@ import java.util.Map;
 public class PDAction {
 
     public static final PDAction SHIFT = new PDAction("S");
-    public static final PDAction REDUCE_RIGHT = new PDAction("RR");
-    public static final PDAction REDUCE_LEFT = new PDAction("RL");
+    //public static final PDAction REDUCE_RIGHT = new PDAction("RR");
+    //public static final PDAction REDUCE_LEFT = new PDAction("RL");
     public static final PDAction NOT_AVAILABLE = new PDAction("NA");
     public static final PDAction END_STATE = new PDAction("E");
     public static final PDAction PENDING = new PDAction("SS");
     final String m_action;
     final String m_pos;
+    
     static Map<String, PDAction> m_posActions;
     static Map<String, PDAction> m_sPosActions;
+    static Map<String, PDAction> m_RRAction;// افزوده شده
+    static Map<String, PDAction> m_RLAction;// افزوده شده
+    
     static final int m_numPos;
+    static final int m_numDepTag;// افزوده شده
     static final String[] m_posSet;
+    //static final String[] m_posDepTag;// افزوده شده
     static final CTBTagDictionary m_dict;
 
     static {
         m_dict = new CTBTagDictionary(true); // it doesn't matter even if closed tags are disabled.
         m_posActions = new HashMap<>();
         m_sPosActions = new HashMap<>();
+        m_RLAction = new HashMap<>();
+        m_RRAction = new HashMap<>();
+        
         for (String sPos : m_dict.getTagList()) {
             m_posActions.put(sPos, new PDAction("R-" + sPos));
             m_sPosActions.put(sPos, new PDAction("RS-" + sPos));
         }
+        
+        for(String depTag : m_dict.getDepTagList()){// افزوده شده
+            m_RLAction.put(depTag,new PDAction("RL-" + depTag));
+            m_RRAction.put(depTag,new PDAction("RR-" + depTag));
+        }
+        
         m_numPos = m_dict.getTagCount();
         m_posSet = m_dict.getTagList();
+        m_numDepTag = m_dict.getDepTagCount();
     }
 
     private PDAction(String s) {
@@ -71,9 +87,9 @@ public class PDAction {
         if (index == 0) {
             return SHIFT;
         } else if (index == 1) {
-            return REDUCE_RIGHT;
+            return getRRAction(null);
         } else if (index == 2) {
-            return REDUCE_LEFT;
+            return getRLAction(null);
         } else if (index == 3) {
             return NOT_AVAILABLE;
         } else if (index == 4) {
@@ -90,9 +106,9 @@ public class PDAction {
     public static int getActionIndex(PDAction act) {
         if (act == SHIFT) {
             return 0;
-        } else if (act == REDUCE_RIGHT) {
+        } else if (act.isReduceRight()) {
             return 1;
-        } else if (act == REDUCE_LEFT) {
+        } else if (act.isReduceLeft()) {
             return 2;
         } else if (act == NOT_AVAILABLE) {
             return 3;
@@ -108,7 +124,7 @@ public class PDAction {
     }
 
     public static int getActionCount() {
-        return 6 + m_numPos;
+        return 6 + m_numPos + m_numDepTag*2;
     }
 
     public static PDAction getPosAction(String sPos) {
@@ -120,6 +136,16 @@ public class PDAction {
 //		assert(m_sPosActions.containsKey(sPos));
         return m_sPosActions.get(sPos);
     }
+    
+    public static PDAction getRRAction(String DepTag){// افزوده شده
+        //System.out.println("RR: "+DepTag);
+        return m_RRAction.get(DepTag);
+    }
+    
+    public static PDAction getRLAction(String DepTag){// افزوده شده
+        //System.out.println("RL: "+DepTag);
+        return m_RLAction.get(DepTag);
+    }
 
     public boolean isPosAction() {
         return m_action.startsWith("R-");
@@ -128,6 +154,14 @@ public class PDAction {
     public boolean isShiftPosAction() {
         return m_action.startsWith("RS-");
     }
+    
+    public boolean isReduceRight(){
+        return m_action.startsWith("RR-");
+    }
+     public boolean isReduceLeft(){
+         return m_action.startsWith("RL-");
+     }
+    
 
     public String getPos() {
         assert (isPosAction() || isShiftPosAction());
