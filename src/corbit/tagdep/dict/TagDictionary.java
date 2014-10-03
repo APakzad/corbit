@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,11 +66,17 @@ public abstract class TagDictionary {
     protected Map<String, String[]> m_allTagDict;
     // store closed tags of words that are not in m_tagDict
     protected Map<String, String[]> m_closedTagDict;
+    
+    protected Map<String, String[]> m_allDepTagDict; //افزوده شده
+    protected Map<String, String[]> m_DepTagDict; //افزوده شده
+    
+    protected final String[] m_DepTagList;// افزوده شده
 
     protected TagDictionary(
             final String[] openTagList,
             final String[] closedTagList,
-            final String[] tagList) {
+            final String[] tagList, final String[] DepTags) {
+        m_DepTagList = DepTags;
         m_openTagList = openTagList;
         m_tagList = tagList;
         m_closedTagSet = closedTagList != null
@@ -95,6 +102,10 @@ public abstract class TagDictionary {
         m_tagDict = new HashMap<>();
         m_allTagDict = new HashMap<>();
         m_closedTagDict = new HashMap<>();
+        
+        m_DepTagDict = new HashMap<>();// افزوده شده
+        m_allDepTagDict = new HashMap<>();// افزوده شده
+                
     }
 
     public Set<String> getVocabList() {
@@ -150,17 +161,37 @@ public abstract class TagDictionary {
             return m_openTagList;
         }
     }
+    
+    //تابع افزوده شده
+    public String[] getDepTagCandidates(String sForm){
+        if(m_DepTagDict.containsKey(sForm)){
+            return m_DepTagDict.get(sForm);
+        }
+        else{
+            return null;
+            
+        }
+        
+    }
 
     public String[] getTagList() {
         return m_tagList;
     }
-
+    
+    public String[] getDepTagList(){
+        return m_DepTagList;
+    }
+    
     public int getTagIndex(String sPos) {
         return m_tagIndex.containsKey(sPos) ? m_tagIndex.get(sPos) : -1;
     }
 
     public int getTagCount() {
         return m_tagList.length;
+    }
+    
+     public int getDepTagCount() {// افزوده شده
+        return m_DepTagList.length;
     }
 
     public Set<String> getTagSet() {
@@ -175,8 +206,8 @@ public abstract class TagDictionary {
         try (BufferedReader sr = new BufferedReader(
                         new InputStreamReader(
                         new FileInputStream(sFile), "UTF-8"))) {
-            List<String> lsOpen = new ArrayList<>();
-            List<String> lsClosed = new ArrayList<>();
+            List<String> lsOpen = new LinkedList<>();
+            List<String> lsClosed = new LinkedList<>();
             while ((sLine = sr.readLine()) != null) {
                 sLine = Statics.trimSpecial(sLine);
                 String[] p = sLine.split("\t");
@@ -209,11 +240,47 @@ public abstract class TagDictionary {
                 }
             }
         }
+        
+        
+        // افزوده شده برای خواندن برچسب های وابستگی از دیکشنری
+        try (BufferedReader sr = new BufferedReader(
+                        new InputStreamReader(
+                        new FileInputStream("DepDictFile.dict"), "UTF-8"))) {
+            List<String> lsDepTag = new LinkedList<>();
+            //List<String> lsClosed = new ArrayList<>();
+            while ((sLine = sr.readLine()) != null) {
+                sLine = Statics.trimSpecial(sLine);
+                String[] p = sLine.split("\t");
+                lsDepTag.clear();
+                //lsClosed.clear();
+                int iTotalCount = 0;
+                for (int i = 1; i < p.length; ++i) {
+                    String[] pp = p[i].split(":");
+                    String DepTag = pp[0];
+                    int iCount = Integer.parseInt(pp[1]);
+                    if (iCount > 0) {
+                        iTotalCount += iCount;
+                        lsDepTag.add(DepTag);
+                        
+                    }
+                }
+                String[] DepTags = lsDepTag.toArray(new String[0]);
+                
+                if (lsDepTag.size() > 0) {
+                    m_allDepTagDict.put(p[0], DepTags);
+                }
+                if (lsDepTag.size() > 0 && iTotalCount >= iThreshold) {
+                    m_DepTagDict.put(p[0], DepTags);
+                }
+            }
+        }
     }
 
     public void createCountDict(ParseReader pr, String sSaveFile)
             throws IOException {
         Map<String, Map<String, Integer>> dict = new LinkedHashMap<>();
+        Map<String, Map<String, Integer>> DepDict = new LinkedHashMap<>();  //افزوده شده
+        
         StepCounter sc = new StepCounter();
 
         try {
@@ -228,8 +295,10 @@ public abstract class TagDictionary {
                     }
                     if (!dict.containsKey(t.form)) {
                         dict.put(t.form, new TreeMap<String, Integer>());
+                        DepDict.put(t.form, new TreeMap<String, Integer>());  // افزوده شده
                     }
                     Statics.<String>increment(dict.get(t.form), t.pos);
+                    Statics.<String>increment(DepDict.get(t.form), t.dependency); // افزوده شده
                 }
                 sc.increment();
             }
@@ -241,6 +310,19 @@ public abstract class TagDictionary {
                         new FileOutputStream(sSaveFile), "UTF-8"))) {
             for (String s : dict.keySet()) {
                 Map<String, Integer> lp = dict.get(s);
+                sw.print(s + "\t");
+                for (Entry<String, Integer> p : lp.entrySet()) {
+                    sw.print(p.getKey() + ":" + p.getValue() + "\t");
+                }
+                sw.println();
+            }
+        }
+        //افزوده شده برای نوشتن در واژه نامه برچسب وابستگی 
+        try (PrintWriter sw = new PrintWriter(
+                        new OutputStreamWriter(
+                        new FileOutputStream("DepDictFile.dict"), "UTF-8"))) {
+            for (String s : DepDict.keySet()) {
+                Map<String, Integer> lp = DepDict.get(s);
                 sw.print(s + "\t");
                 for (Entry<String, Integer> p : lp.entrySet()) {
                     sw.print(p.getKey() + ":" + p.getValue() + "\t");
