@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -102,7 +103,7 @@ public class DPParserChart {
     }
 
     public List<Pair<SRParserState, double[]>> entries() {
-        List<Pair<SRParserState, double[]>> l = new ArrayList<>();
+        List<Pair<SRParserState, double[]>> l = new LinkedList<>();
         for (Entry<SRParserState, Pair<SRParserState, double[]>> p : m_entries.entrySet()) {
             l.add(new Pair<>(p.getValue().first, p.getValue().second));
         }
@@ -140,7 +141,7 @@ public class DPParserChart {
     }
 
     public void prune(int iBeam) {
-        List<Entry<SRParserState, Pair<SRParserState, double[]>>> l = new ArrayList<>();
+        List<Entry<SRParserState, Pair<SRParserState, double[]>>> l = new LinkedList<>();
         for (Entry<SRParserState, Pair<SRParserState, double[]>> p : m_entries.entrySet()) {
             l.add(p);
         }
