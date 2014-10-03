@@ -34,20 +34,22 @@ public class DepWord extends Word {
     public int index;
     public int head;
     public DepTreeSentence sent;
+    public String dependency;
 
-    public DepWord(DepTreeSentence sent, int index, String form, String pos,String lemm, int head) {
+    public DepWord(DepTreeSentence sent, int index, String form, String pos,String lemm, int head, String dependency) {
         super(form, pos, lemm);
         this.sent = sent;
         this.index = index;
         this.head = head;
+        this.dependency=dependency;
     }
 
     public DepWord(DepWord dw) {
-        this(dw.sent, dw.index, dw.form, dw.pos,dw.lemm, dw.head);
+        this(dw.sent, dw.index, dw.form, dw.pos,dw.lemm, dw.head,dw.dependency);
     }
 
     public DepWord() {
-        this(null, -1, null, null,null, -1);
+        this(null, -1, null, null,null, -1,null);
     }
 
     @Override
