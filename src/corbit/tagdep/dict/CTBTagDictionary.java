@@ -35,46 +35,35 @@ import java.util.TreeSet;
 public class CTBTagDictionary extends TagDictionary {
 
     private static final long serialVersionUID = 6692431815764780778L;
-    static final String[] ssCtbTags = 
-       // CPOS
-//       {"ADJ", "ADR", "ADV", "CONJ", "IDEN", "N",
-//        "PART", "POSNUM", "POSTP", "PR", "PREM", "PRENUM", "PREP", "PSUS", 
-//        "PUNC", "V", "SUBR", 
-//        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR", "NUM", "EMPH"};//????
-       // FPOS
-       {"AJP", "AJCM", "AJSUP", "PRADR", "POSADR", "SADV", "CONJ", "IDEN", "ANM", "IANM", 
-        "PART", "POSNUM", "POSTP", "SEPER", "JOPER", "DEMON", "INTG", "CREFX", "UCREFX", 
-        "RECPR", "EXAJ", "QUAJ", "DEMAJ", "AMBAJ", "PRENUM", "PREP", "PSUS", "PUNC", "ACT", 
-        "PASS", "MODL", "SUBR","AVP","AVCM","_","POST"};//????
-    
+    static final String[] ssCtbTags = {"ADJ", "ADR", "ADV", "CONJ", "IDEN", "N",
+        "PART", "POSNUM", "POSTP", "PR", "PREM", "PRENUM", "PREP", "PSUS", 
+        "PUNC", "V", "SUBR", 
+        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR", "NUM", "EMPH"};//????
 //    static final String[] ssCtbTags = {"AD", "AS", "BA", "CC", "CD", "CS",
 //        "DEC", "DEG", "DER", "DEV", "DT", "ETC", "FW", "IJ", "JJ", "LB",
 //        "LC", "M", "MSP", "NN", "NR", "NT", "OD", "ON", "P", "PN", "PU",
 //        "SB", "SP", "VA", "VC", "VE", "VV", "URL"};
-    static final String[] ssOpenTags = 
-       // CPOS
-//       {"ADJ", "ADR", "ADV", "CONJ", "IDEN", "N",
-//        "PART", "POSNUM", "POSTP", "PR", "PREM", "PRENUM", "PREP", "PSUS", 
-//        "PUNC", "V", "SUBR", 
-//        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR", "NUM", "EMPH"};//????
-       // FPOS
-       {"AJP", "AJCM", "AJSUP", "PRADR", "POSADR", "SADV", "CONJ", "IDEN", "ANM", "IANM", 
-        "PART", "POSNUM", "POSTP", "SEPER", "JOPER", "DEMON", "INTG", "CREFX", "UCREFX", 
-        "RECPR", "EXAJ", "QUAJ", "DEMAJ", "AMBAJ", "PRENUM", "PREP", "PSUS", "PUNC", "ACT", 
-        "PASS", "MODL", "SUBR","AVP","AVCM","_","POST"};//????
-    
-    
+    static final String[] ssOpenTags = {"ADJ", "ADR", "ADV", "CONJ", "IDEN", "N",
+        "PART", "POSNUM", "POSTP", "PR", "PREM", "PRENUM", "PREP", "PSUS", 
+        "PUNC", "V", "SUBR", 
+        "UPR", "SPR", "MEAS", "CPR", "PRO", "CL", "CPR", "NUM", "EMPH"};//????
 //    {"AD", "CD", "FW", "JJ", "M", "MSP", 
 //        "NN", "NR", "NT", "OD", "VA", "VV", "URL"};
     static final String[] ssClosedTags = {};//"AS", "BA", "CC", "CS", "DEC", "DEG",
 //        "DER", "DEV", "DT", "ETC", "IJ", "LB", "LC", "ON", "P", "PN", "PU",
 //        "SB", "SP", "VC", "VE"};
 
+    static final String[] DepTags={"ACL","ADV","ADVC","AJCONJ","AJPP","AJUCL","APOSTMOD","APP",
+        "APREMOD","AVCONJ","COMPPP","ENC","LVP","MESU","MOS","MOZ","NADV","NCL","NCONJ","NE",
+        "NEZ","NPOSTMOD","NPP","NPREMOD","NPRT","NVE","OBJ","OBJ2","PARCL","PART","PCONJ",
+        "POSDEP","PRD","PREDEP","PROG","PUNC","ROOT","SBJ","TAM","VCL","VCONJ","VPP","VPRT"};
+    
+    
     public CTBTagDictionary(boolean bUseClosedTags) {
         super(
                 bUseClosedTags ? ssOpenTags : ssCtbTags,
                 bUseClosedTags ? ssClosedTags : null,
-                ssCtbTags);
+                ssCtbTags, DepTags);
     }
 
     public static Set<String> copyTagSet() {
