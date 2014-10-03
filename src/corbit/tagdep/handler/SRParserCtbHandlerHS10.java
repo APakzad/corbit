@@ -73,8 +73,14 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         static final int F_lemmq2=25;
         static final int F_lemms0=26;
         static final int F_lemms1=27;
-        
-        static final int NUM_FEATURE = 28;
+        static final int F_lemm_wst0rc =28;
+        static final int F_lemm_wst0lc =29;
+        static final int F_lemm_wst1rc =30;
+        static final int F_lemm_wst1lc =31;
+        static final int F_L_qp1 = 32;
+        static final int F_L_qf1 = 33;
+        static final int F_L_qf2 = 34;
+        static final int NUM_FEATURE = 35;
 
         AtomsHS10(
                 int curidx,
@@ -85,15 +91,15 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
                 int idx_st1,
                 String f_st0,
                 String f_st1,
-                String f_qp1,
-                String f_qf1,
+                String f_qp1,String L_qp1,
+                String f_qf1,String L_qf1,
                 String p_st0,
                 String p_st1,
                 String p_st2,
                 String p_qp2,
                 String p_qp1,
                 String p_qf1,
-                String p_qf2,
+                String p_qf2, String L_qf2,
                 String p_st0rc,
                 String p_st0lc,
                 String p_st1rc,
@@ -102,7 +108,7 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
                 boolean adjoin,
                 String npos,
                 TreeSet<String> fvdelay,
-                String lemmq1, String lemmq2, String lemms0, String lemms1) {
+                String lemmq1, String lemmq2, String lemms0, String lemms1, String lemm_wst0rc, String lemm_wst0lc, String lemm_wst1rc, String lemm_wst1lc) {
             super(NUM_FEATURE, fvdelay);
             features = new String[NUM_FEATURE];
             features[F_curidx] = Integer.toString(curidx);
@@ -114,7 +120,9 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
             features[F_f_st0] = f_st0;
             features[F_f_st1] = f_st1;
             features[F_f_qp1] = f_qp1;
+            features[F_L_qp1] = L_qp1;
             features[F_f_qf1] = f_qf1;
+            features[F_L_qf1] = L_qf1;
             features[F_p_st0] = p_st0;
             features[F_p_st1] = p_st1;
             features[F_p_st2] = p_st2;
@@ -122,6 +130,7 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
             features[F_p_qp1] = p_qp1;
             features[F_p_qf1] = p_qf1;
             features[F_p_qf2] = p_qf2;
+            features[F_L_qf2] = L_qf2;
             features[F_p_st0rc] = p_st0rc;
             features[F_p_st0lc] = p_st0lc;
             features[F_p_st1rc] = p_st1rc;
@@ -133,6 +142,10 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
             features[F_lemmq2] = lemmq2;
             features[F_lemms0] = lemms0;
             features[F_lemms1] = lemms1;
+            features[F_lemm_wst0rc] = lemm_wst0rc;
+            features[F_lemm_wst0lc] = lemm_wst0lc;
+            features[F_lemm_wst1rc] = lemm_wst1rc;
+            features[F_lemm_wst1lc] = lemm_wst1lc;
             setHash();
         }
     }
@@ -159,11 +172,19 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         String sLemmq2 = idx < s0.sent.size()-1 ? s0.sent.get(idx+1).lemm : OOR;
         String sLemms0 = wst0 != null ? wst0.lemm : null;
         String sLemms1 = wst1 != null ? wst1.lemm : null;
+        String slemm_wst0rc = wst0rc != null ? wst0rc.lemm : null;
+        String slemm_wst0lc = wst0lc != null ? wst0lc.lemm : null;
+        String slemm_wst1rc = wst1rc != null ? wst1rc.lemm : null;
+        String slemm_wst1lc = wst1lc != null ? wst1lc.lemm : null;
         
         String sfst0 = wst0.form;
         String sfst1 = wst1 != null ? wst1.form : OOR;
+        
         String sfqp1 = idx > 0 ? s0.sent.get(idx - 1).form : OOR;
+        String sLqp1 = idx > 0 ? s0.sent.get(idx - 1).lemm : OOR; 
+        
         String sfqf1 = idx < s0.sent.size() ? s0.sent.get(idx).form : OOR;
+        String sLqf1 = idx < s0.sent.size() ? s0.sent.get(idx).lemm : OOR;
 
         String spst0 = wst0.pos;
         String spst1 = wst1 != null ? wst1.pos : OOR;
@@ -172,6 +193,8 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         String spqp2 = idx > 1 ? (s0.idbgn <= idx - 2) ? s0.pos[idx - 2] : s1.pos[idx - 2] : OOR;
         String spqf1 = idx < s0.sent.size() ? s0.sent.get(idx).pos : OOR;
         String spqf2 = idx < s0.sent.size() - 1 ? s0.sent.get(idx + 1).pos : OOR;
+        String sLqf2 = idx < s0.sent.size() - 1 ? s0.sent.get(idx + 1).lemm : OOR;
+        
         String spst0rc = wst0rc != null ? s0.pos[wst0rc.index] : OOR;
         String spst0lc = wst0lc != null ? s0.pos[wst0lc.index] : OOR;
         String spst1rc = wst1rc != null ? s1.pos[wst1rc.index] : OOR;
@@ -203,15 +226,15 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
                 wst1 != null ? wst1.index : -2,
                 sfst0,
                 sfst1,
-                sfqp1,
-                sfqf1,
+                sfqp1,sLqp1,
+                sfqf1,sLqf1,
                 spst0,
                 spst1,
                 spst2,
                 spqp2,
                 spqp1,
                 spqf1,
-                spqf2,
+                spqf2,sLqf2,
                 spst0rc,
                 spst0lc,
                 spst1rc,
@@ -223,7 +246,11 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
                 sLemmq1,
                 sLemmq2,
                 sLemms0,
-                sLemms1);
+                sLemms1,
+                slemm_wst0rc,
+                slemm_wst0lc,
+                slemm_wst1rc,
+                slemm_wst1lc);
     }
 
     @Override
@@ -233,7 +260,9 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         String sfst0 = s0.atoms.get(AtomsHS10.F_f_st0);
         String sfst1 = s0.atoms.get(AtomsHS10.F_f_st1);
         String sfqp1 = s0.atoms.get(AtomsHS10.F_f_qp1);
+        String sLqp1 = s0.atoms.get(AtomsHS10.F_L_qp1);
         String sfqf1 = s0.atoms.get(AtomsHS10.F_f_qf1);
+        String sLqf1 = s0.atoms.get(AtomsHS10.F_L_qf1);
         String spst0 = s0.atoms.get(AtomsHS10.F_p_st0);
         String spst1 = s0.atoms.get(AtomsHS10.F_p_st1);
         String spst2 = s0.atoms.get(AtomsHS10.F_p_st2);
@@ -241,6 +270,7 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         String spqp2 = s0.atoms.get(AtomsHS10.F_p_qp2);
         String spqf1 = s0.atoms.get(AtomsHS10.F_p_qf1);
         String spqf2 = s0.atoms.get(AtomsHS10.F_p_qf2);
+        String sLqf2 = s0.atoms.get(AtomsHS10.F_L_qf2);
         String spst0rc = s0.atoms.get(AtomsHS10.F_p_st0rc);
         String spst0lc = s0.atoms.get(AtomsHS10.F_p_st0lc);
         String spst1rc = s0.atoms.get(AtomsHS10.F_p_st1rc);
@@ -251,6 +281,10 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         String sLemmq2=s0.atoms.get(AtomsHS10.F_lemmq2);
         String sLemms0=s0.atoms.get(AtomsHS10.F_lemms0);
         String sLemms1=s0.atoms.get(AtomsHS10.F_lemms1);
+        String sLemm_wst0rc=s0.atoms.get(AtomsHS10.F_lemm_wst0rc);
+        String sLemm_wst0lc=s0.atoms.get(AtomsHS10.F_lemm_wst0lc);
+        String sLemm_wst1rc=s0.atoms.get(AtomsHS10.F_lemm_wst1rc);
+        String sLemm_wst1lc=s0.atoms.get(AtomsHS10.F_lemm_wst1lc);
         
         int curidx = s0.curidx;
         final int szSent = s0.sent.size();
@@ -268,8 +302,8 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
          *  parsing features
          */
 
-        if (act == PDAction.REDUCE_LEFT || act == PDAction.REDUCE_RIGHT || act == PDAction.SHIFT || act.isShiftPosAction()) {
-            SRParserCtbHandlerHS10.setParseFeaturesHS10(v, vd, m_vocab, bAdd, sAct, sfst0, sfst1, sfqf1, spst0, spst1, spst2, spqf1, spqf2, spst0rc, spst0lc, spst1rc, spst1lc, sPunct, sAdjoin,sLemmq1,sLemmq2,sLemms0 ,sLemms1, curidx, szSent, m_params.m_bUseLookAhead);
+        if (act.isReduceLeft() || act.isReduceRight() || act == PDAction.SHIFT || act.isShiftPosAction()) {
+            SRParserCtbHandlerHS10.setParseFeaturesHS10(v, vd, m_vocab, bAdd, sAct, sfst0, sfst1, sfqf1,sLqf1, spst0, spst1, spst2, spqf1, spqf2,sLqf2, spst0rc, spst0lc, spst1rc, spst1lc, sPunct, sAdjoin,sLemmq1,sLemmq2,sLemms0 ,sLemms1, sLemm_wst0rc, sLemm_wst0lc,sLemm_wst1rc, sLemm_wst1lc, curidx, szSent, m_params.m_bUseLookAhead);
         }
 
         /*
@@ -286,9 +320,9 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
          */
 
         if (m_params.m_bUseTagFeature && act.isShiftPosAction()) {
-            SRParserCtbHandlerZC08.setTagFeaturesZC08(v, m_vocab, m_dict, bAdd, sAct, sfqp1, sfqf1, sfqf2, spqp1, spqp2);
+            SRParserCtbHandlerZC08.setTagFeaturesZC08(v, m_vocab, m_dict, bAdd, sAct, sfqp1,sLqp1, sfqf1,sLqf1, sfqf2, spqp1, spqp2);
             if (m_params.m_bUseSyntax) {
-                SRParserCtbHandlerHS10.setTagSyntacticFeatures(v, m_vocab, bAdd, sAct, sfst0, sfqf1, spst0, spst1, spst0lc, sLemmq1, sLemmq2, sLemms0, sLemms1);
+                SRParserCtbHandlerHS10.setTagSyntacticFeatures(v, m_vocab, bAdd, sAct, sfst0, sfqf1, spst0, spst1, spst0lc, sLemmq1, sLemmq2, sLemms0, sLemms1 ,sLemm_wst0rc, sLemm_wst0lc, sLemm_wst1rc, sLemm_wst1lc);
             }
         }
 
@@ -302,29 +336,53 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
             Vocab vocab,
             boolean bAdd,
             String sAct,
-            String sfst0, String sfst1, String sfqf1, String spst0,
-            String spst1, String spst2, String spqf1, String spqf2,
+            String sfst0, String sfst1, String sfqf1,String sLqf1, String spst0,
+            String spst1, String spst2, String spqf1, String spqf2,String sLqf2,
             String spst0rc, String spst0lc, String spst1rc, String spst1lc,
-            String sPunct, String sAdjoin, String sLemmq1, String sLemmq2, String sLemms0, String sLemms1,
+            String sPunct, String sAdjoin, String sLemmq1, String sLemmq2, String sLemms0, String sLemms1, String sLemm_wst0rc,String sLemm_wst0lc,String sLemm_wst1rc,String sLemm_wst1lc,
             final int curidx, final int szSent,
             boolean bUseLookAhead) {
         addFeature(v, "FP01-" + sfst0, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F1:" + sfst0+ SEP +sLemms0, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP02-" + spst0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F2:" + spst0+ SEP +sLemms0, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP03-" + sfst0 + SEP + spst0, sAct, 1.0, bAdd, vocab);
 
         addFeature(v, "FP04-" + sfst1, sAct, 1.0, bAdd, vocab);
-        addFeature(v, "FP05-" + spst1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F3:" + sfst1+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F4:" + sfst1+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
+       addFeature(v, "FP05-" + spst1, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F5:" + spst1+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP06-" + sfst1 + SEP + spst1, sAct, 1.0, bAdd, vocab);
 
         addFeature(v, "FP07-" + sfqf1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F6:" + sfqf1+SEP+sLemmq1, sAct, 1.0, bAdd, vocab);
+        
+        addFeature(v, "FP40-" + sLqf1, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F7:" + sLqf1+SEP+sLemmq1, sAct, 1.0, bAdd, vocab);
 
         addFeature(v, "FP10-" + sfst0 + SEP + sfst1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F9:" + sfst0 + SEP + sfst1+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP11-" + spst0 + SEP + spst1, sAct, 1.0, bAdd, vocab);
-        addFeature(v, "FP13-" + sfst0 + SEP + spst0 + SEP + spst1, sAct, 1.0, bAdd, vocab);
+        //**addFeature(v, "FP13-" + sfst0 + SEP + spst0 + SEP + spst1, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F10:" + sfst0 + SEP + spst0 + SEP + spst1+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP14-" + sfst0 + SEP + spst0 + SEP + sfst1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F11:" + sfst0 + SEP + spst0 + SEP + sfst1+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP15-" + sfst0 + SEP + sfst1 + SEP + spst1, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F12:" + sfst0 + SEP + sfst1 + SEP + spst1+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP16-" + spst0 + SEP + sfst1 + SEP + spst1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F13:" + spst0 + SEP + sfst1 + SEP + spst1+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP17-" + sfst0 + SEP + spst0 + SEP + sfst1 + SEP + spst1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F14:" + sfst0 + SEP + spst0 + SEP + sfst1 + SEP + spst1+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
 
         if (bUseLookAhead) {
             if (vd != null) // use delayed evaluation
@@ -342,28 +400,78 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
 
                 if (bAddToDelay1) {
                     vd.add("FP08d-" + spqf1 + SEP + sAct);
+                    //vd.add("F8:" + spqf1 + SEP+ sLemmq1+SEP+ sAct);
+                    
                     vd.add("FP09d-" + sfqf1 + SEP + spqf1 + SEP + sAct);
-                    vd.add("FP12d-" + spst0 + SEP + spqf1 + SEP + sAct);
+                    //vd.add("F15:" + sfqf1 + SEP + spqf1 + SEP + sLemmq1+SEP+ sAct);
+                    
+                   vd.add("FP12d-" + spst0 + SEP + spqf1 + SEP + sAct);
+                    vd.add("F16:" + spst0 + SEP + spqf1+ SEP + sLemms0 + SEP + sAct);
+                    //vd.add("F17:" + spst0 + SEP + spqf1+ SEP + sLemms0 + SEP + sLemmq1+ SEP + sAct);
+                    
                     vd.add("FP19d-" + spst0 + SEP + spst1 + SEP + spqf1 + SEP + sAct);
+                    //vd.add("F18:" + spst0 + SEP + spst1 + SEP + spqf1 + SEP + sLemms0+ SEP + sAct);
+                    vd.add("F19:" + spst0 + SEP + spst1 + SEP + spqf1 + SEP + sLemms0+ SEP + sLemms1+SEP + sAct);
+                    //vd.add("F20:" + spst0 + SEP + spst1 + SEP + spqf1 + SEP + sLemms0+ SEP + sLemms1+ SEP + sLemmq1+SEP + sAct);
+                    
                     vd.add("FP21d-" + sfst0 + SEP + spst1 + SEP + spqf1 + SEP + sAct);
+                    vd.add("F21:" + sfst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0 + SEP + sAct);
+                    //vd.add("F22:" + sfst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0+ SEP + sLemms1 + SEP + sAct);
+                    //vd.add("F23:" + sfst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0+ SEP + sLemms1+ SEP + sLemmq1 + SEP + sAct);
+                    
                 } else {
                     addFeature(v, "FP08d-" + spqf1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F8:" + spqf1+ SEP+ sLemmq1, sAct, 1.0, bAdd, vocab);
+                    
                     addFeature(v, "FP09d-" + sfqf1 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F15:" + sfqf1 + SEP + spqf1+ SEP + sLemmq1, sAct, 1.0, bAdd, vocab);
+                    
                     addFeature(v, "FP12d-" + spst0 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
+                    addFeature(v, "F16:" + spst0 + SEP + spqf1+ SEP + sLemms0, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F17:" + spst0 + SEP + spqf1+ SEP + sLemms0+ SEP + sLemmq1, sAct, 1.0, bAdd, vocab);
+                    
                     addFeature(v, "FP19d-" + spst0 + SEP + spst1 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F18:" + spst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0, sAct, 1.0, bAdd, vocab);
+                    addFeature(v, "F19:" + spst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0+ SEP + sLemms1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F20:" + spst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0+ SEP + sLemms1+ SEP + sLemmq1, sAct, 1.0, bAdd, vocab);
+                    
                     addFeature(v, "FP21d-" + sfst0 + SEP + spst1 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
+                    addFeature(v, "F21:" + sfst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F22:" + sfst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0+ SEP + sLemms1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F23:" + sfst0 + SEP + spst1 + SEP + spqf1+ SEP + sLemms0+ SEP + sLemms1+ SEP + sLemmq1, sAct, 1.0, bAdd, vocab);
                 }
                 if (bAddToDelay1 || bAddToDelay2) {
                     vd.add("FP18d-" + spst0 + SEP + spqf1 + SEP + spqf2 + SEP + sAct);
+                    //vd.add("F24:" + spst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0 + SEP + sAct);
+                    vd.add("F25:" + spst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0+ SEP + sLemmq1 + SEP + sAct);
+                    //vd.add("F26:" + spst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0+ SEP + sLemmq1+ SEP + sLemmq2 + SEP + sAct);
+                    
                     vd.add("FP20d-" + sfst0 + SEP + spqf1 + SEP + spqf2 + SEP + sAct);
+                    //vd.add("F27:" + sfst0 + SEP + spqf1 + SEP + spqf2 + SEP + sLemms0+ SEP + sAct);
+                    //vd.add("F28:" + sfst0 + SEP + spqf1 + SEP + spqf2 + SEP + sLemms0+ SEP + sLemmq1+ SEP + sAct);
+                    //vd.add("F29:" + sfst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0+ SEP + sLemmq1+SEP+sLemmq2 + SEP + sAct);
+                    
                 } else {
                     addFeature(v, "FP18d-" + spst0 + SEP + spqf1 + SEP + spqf2, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F24:" + spst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0, sAct, 1.0, bAdd, vocab);
+                    addFeature(v, "F25:" + spst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0+ SEP + sLemmq1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F26:" + spst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0+ SEP + sLemmq1+ SEP + sLemmq2, sAct, 1.0, bAdd, vocab);
+                    
                     addFeature(v, "FP20d-" + sfst0 + SEP + spqf1 + SEP + spqf2, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F27:" + sfst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F28:" + sfst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0+ SEP + sLemmq1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F29:" + sfst0 + SEP + spqf1 + SEP + spqf2+ SEP + sLemms0+ SEP + sLemmq1+ SEP + sLemmq2, sAct, 1.0, bAdd, vocab);
+                    
                 }
+                
             } else {
                 if (spqf1 != null) {
                     addFeature(v, "FP08-" + spqf1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F30:" + spqf1+SEP+sLemmq1, sAct, 1.0, bAdd, vocab);
+                    
                     addFeature(v, "FP09-" + sfqf1 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
+                    //addFeature(v, "F31:" + sfqf1 + SEP + spqf1+SEP+sLemmq1, sAct, 1.0, bAdd, vocab);
+                    
                     addFeature(v, "FP12-" + spst0 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
                     addFeature(v, "FP19-" + spst0 + SEP + spst1 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
                     addFeature(v, "FP21-" + sfst0 + SEP + spst1 + SEP + spqf1, sAct, 1.0, bAdd, vocab);
@@ -377,30 +485,68 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         }
 
         addFeature(v, "FP22-" + spst0 + SEP + spst1 + SEP + spst1lc, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F32:" + spst0 + SEP + spst1 + SEP + spst1lc+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F33:" + spst0 + SEP + spst1 + SEP + spst1lc+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F37:" + spst0 + SEP + spst1 + SEP + spst1lc+SEP+sLemms0+SEP+sLemms1+SEP+sLemm_wst1lc, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP23-" + spst0 + SEP + spst1 + SEP + spst1rc, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F34:" + spst0 + SEP + spst1 + SEP + spst1rc+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F35:" + spst0 + SEP + spst1 + SEP + spst1rc+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F38:" + spst0 + SEP + spst1 + SEP + spst1rc+SEP+sLemms0+SEP+sLemms1+SEP+sLemm_wst1rc, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP24-" + spst0 + SEP + spst0rc + SEP + spst1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F36:" + spst0 + SEP + spst0rc + SEP + spst1+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F39:" + spst0 + SEP + spst0rc + SEP + spst1+SEP+sLemms0+SEP+sLemm_wst0rc, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F42:" + spst0 + SEP + spst0rc + SEP + spst1+SEP+sLemms0+SEP+sLemm_wst0rc+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP25-" + spst0 + SEP + spst0lc + SEP + spst1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F40:" + spst0 + SEP + spst0lc + SEP + spst1+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F41:" + spst0 + SEP + spst0lc + SEP + spst1+SEP+sLemms0+SEP+sLemm_wst0lc, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F43:" + spst0 + SEP + spst0lc + SEP + spst1+SEP+sLemms0+SEP+sLemm_wst0lc+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
 //		addFeature(v, "FP25-" + spst0 + SEP + spst1lc + SEP + spst1, sAct, 1.0, bAdd, vocab); // compatible with run0818--run0905
         addFeature(v, "FP26-" + sfst0 + SEP + spst1 + SEP + spst1rc, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F44:" + sfst0 + SEP + spst1 + SEP + spst1rc+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F45:" + sfst0 + SEP + spst1 + SEP + spst1rc+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F46:" + sfst0 + SEP + spst1 + SEP + spst1rc+SEP+sLemms0+SEP+sLemms1+SEP+sLemm_wst1rc, sAct, 1.0, bAdd, vocab);
+        
         addFeature(v, "FP27-" + sfst0 + SEP + spst1 + SEP + spst0lc, sAct, 1.0, bAdd, vocab);
-        addFeature(v, "FP28-" + spst0 + SEP + spst1 + SEP + spst2, sAct, 1.0, bAdd, vocab);
-
+        //addFeature(v, "F47:" + sfst0 + SEP + spst1 + SEP + spst0lc+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F48:" + sfst0 + SEP + spst1 + SEP + spst0lc+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F49:" + sfst0 + SEP + spst1 + SEP + spst0lc+SEP+sLemms0+SEP+sLemm_wst0lc, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F50:" + sfst0 + SEP + spst1 + SEP + spst0lc+SEP+sLemms0+SEP+sLemms1+SEP+sLemm_wst0lc, sAct, 1.0, bAdd, vocab);
+        
+        //**addFeature(v, "FP28-" + spst0 + SEP + spst1 + SEP + spst2, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F51:" + spst0 + SEP + spst1 + SEP + spst2+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "F52:" + spst0 + SEP + spst1 + SEP + spst2+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
+        
+        
         addFeature(v, "FP29-", sAct, sAdjoin.equals("true") ? 1.0 : 0.0, bAdd, vocab);
         addFeature(v, "FP30-" + spst0 + SEP + spst1, sAct, sAdjoin.equals("true") ? 1.0 : 0.0, bAdd, vocab);
+        //addFeature(v, "F53:" + spst0 + SEP + spst1+SEP+sLemms0, sAct, sAdjoin.equals("true") ? 1.0 : 0.0, bAdd, vocab);
+        //addFeature(v, "F54:" + spst0 + SEP + spst1+SEP+sLemms0+SEP+sLemms1, sAct, sAdjoin.equals("true") ? 1.0 : 0.0, bAdd, vocab);
+        
+        
         addFeature(v, "FP31-" + sPunct, sAct, 1.0, bAdd, vocab);
         addFeature(v, "FP32-" + spst0 + SEP + spst1 + SEP + sPunct, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F55:" + spst0 + SEP + spst1 + SEP + sPunct+SEP+sLemms0, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "F56:" + spst0 + SEP + spst1 + SEP + sPunct+SEP+sLemms0+SEP+sLemms1, sAct, 1.0, bAdd, vocab);
         
         addFeature(v,"FP33-" + sLemmq1, sAct, 1.0, bAdd, vocab);
-        addFeature(v,"FP34-" + sLemmq2, sAct, 1.0, bAdd, vocab);
+        //addFeature(v,"FP34-" + sLemmq2, sAct, 1.0, bAdd, vocab);
         addFeature(v,"FP35-" + sLemms0, sAct, 1.0, bAdd, vocab);
         addFeature(v,"FP36-" + sLemms1, sAct, 1.0, bAdd, vocab);
-        
+        addFeature(v,"FP36-" + sLemm_wst0rc, sAct, 1.0, bAdd, vocab);
+        //addFeature(v,"FP37-" + sLemm_wst0lc, sAct, 1.0, bAdd, vocab);
+        //addFeature(v,"FP38-" + sLemm_wst1rc, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"FP39-" + sLemm_wst1lc, sAct, 1.0, bAdd, vocab);
+        //addFeature(v, "FP40-" +sLqf2, sAct, 1.0, bAdd, vocab);
         return spqf1;
     }
 
     static void setTagSyntacticFeatures(
             IntFeatVector v, Vocab vocab, boolean bAdd, String sAct,
-            String sfst0, String sfqf1, String spst0, String spst1, String spst0lc, String sLemmq1, String sLemmq2, String sLemms0, String sLemms1) {
+            String sfst0, String sfqf1, String spst0, String spst1, String spst0lc, String sLemmq1, String sLemmq2, String sLemms0, String sLemms1,String sLemm_wst0rc, String sLemm_wst0lc ,String sLemm_wst1rc ,String sLemm_wst1lc) {
         final int ln_sfst0 = sfst0.length();
         final char c_sfst0_b = sfst0.charAt(0);
         final char c_sfst0_e = sfst0.charAt(ln_sfst0 - 1);
@@ -413,8 +559,12 @@ public class SRParserCtbHandlerHS10 extends SRParserHandler {
         addFeature(v, "SF06-" + c_sfst0_e + sfqf1, sAct, 1.0, bAdd, vocab);
         addFeature(v, "SF07-" + spst1 + SEP + spst0 + SEP + sfqf1, sAct, 1.0, bAdd, vocab);
         addFeature(v,"SF08-" + sLemmq1, sAct, 1.0, bAdd, vocab);
-        addFeature(v,"SF09-" + sLemmq2, sAct, 1.0, bAdd, vocab);
+        //addFeature(v,"SF09-" + sLemmq2, sAct, 1.0, bAdd, vocab);
         addFeature(v,"SF10-" + sLemms0, sAct, 1.0, bAdd, vocab);
         addFeature(v,"SF11-" + sLemms1, sAct, 1.0, bAdd, vocab);
-    }
+        addFeature(v,"SF12-" + sLemm_wst0rc, sAct, 1.0, bAdd, vocab);
+        //addFeature(v,"SF13-" + sLemm_wst0lc, sAct, 1.0, bAdd, vocab);
+        //addFeature(v,"SF14-" + sLemm_wst1rc, sAct, 1.0, bAdd, vocab);
+        addFeature(v,"SF14-" + sLemm_wst1lc, sAct, 1.0, bAdd, vocab);
+    }   
 }
