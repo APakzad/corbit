@@ -29,7 +29,8 @@
  */
 package corbit.commons.word;
 
-import java.util.ArrayList;
+
+import java.util.LinkedList;
 import java.util.List;
 
 public class DepChunkTree extends DepChunk {
@@ -38,17 +39,17 @@ public class DepChunkTree extends DepChunk {
 
     public DepChunkTree(UnsegmentedSentence sent, int begin, int end, String tag, int headBegin, int headEnd, ArcLabel label) {
         super(sent, begin, end, tag, headBegin, headEnd, label);
-        children = new ArrayList<>();
+        children = new LinkedList<>();
     }
 
     public DepChunkTree(DepChunkTree t) {
         super(t);
-        children = new ArrayList<>(t.children);
+        children = new LinkedList<>(t.children);
     }
 
     public DepChunkTree(DepChunk w) {
         super(w);
-        children = new ArrayList<>();
+        children = new LinkedList<>();
     }
 
     public DepChunkTree(DepChunk w, List<DepChunkTree> children) {
