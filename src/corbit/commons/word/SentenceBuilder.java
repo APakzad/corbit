@@ -30,8 +30,9 @@
 package corbit.commons.word;
 
 import corbit.commons.io.Console;
-import java.util.ArrayList;
+
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class SentenceBuilder {
 
     ParsedSentence sent = new ParsedSentence();
     StringBuilder sb = new StringBuilder();
-    List<Integer> lBounds = new ArrayList<>();
+    List<Integer> lBounds = new LinkedList<>();
     int curidx = 0;
     final Set<String> posSet;
     final Set<String> labelSet;
