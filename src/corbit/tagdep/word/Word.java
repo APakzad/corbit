@@ -52,7 +52,7 @@ public class Word {
             return false;
         }
         Word w = (Word) obj;
-        return w.form.equals(form) && w.pos.equals(pos);
+        return w.form.equals(form) && w.pos.equals(pos) && w.lemm.equals(lemm);
     }
 
     @Override
