@@ -39,7 +39,7 @@ public class SRParserParameters {
     final int m_numOpts = 24;
     // model parameters to save
     int m_iFeatureType = 0; // 0: HS10, 1: ZC11
-    int m_iBeam = 8;
+    int m_iBeam = 16;
     int m_iDepth = 0;
     int m_iIteration = 0;
     int m_iBestIteration = 0;
