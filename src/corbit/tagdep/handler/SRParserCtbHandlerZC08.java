@@ -51,19 +51,24 @@ public class SRParserCtbHandlerZC08 extends SRParserHandler {
         public static final int F_f_qf1 = 2;
         public static final int F_p_qp2 = 3;
         public static final int F_p_qp1 = 4;
-        public static final int NUM_FEATURE = 5;
+        
+        public static final int F_L_qp1 = 5;
+        public static final int F_L_qf1 = 6;
+        public static final int NUM_FEATURE = 7;
 
         AtomsZC08(
                 int curidx,
-                String f_qp1,
-                String f_qf1,
+                String f_qp1,String L_qp1,
+                String f_qf1,String L_qf1,
                 String p_qp2,
                 String p_qp1) {
             super(NUM_FEATURE, null);
             features = new String[NUM_FEATURE];
             features[F_curidx] = Integer.toString(curidx);
             features[F_f_qp1] = f_qp1;
+            features[F_L_qp1] = L_qp1;
             features[F_f_qf1] = f_qf1;
+            features[F_L_qf1] = L_qf1;
             features[F_p_qp2] = p_qp2;
             features[F_p_qp1] = p_qp1;
             setHash();
@@ -81,8 +86,11 @@ public class SRParserCtbHandlerZC08 extends SRParserHandler {
         int idx = s0.curidx;
 
         String sfqp1 = idx > 0 ? s0.sent.get(idx - 1).form : OOR;
+        String sLqp1 = idx > 0 ? s0.sent.get(idx - 1).lemm: OOR;
+        
         String sfqf1 = idx < s0.sent.size() ? s0.sent.get(idx).form : OOR;
-
+        String sLqf1 = idx < s0.sent.size() ? s0.sent.get(idx).lemm : OOR;
+        
         String spqp1 = idx > 0 ? s0.pos[idx - 1] : OOR;
         String spqp2 = idx > 1 ? (s0.idbgn <= idx - 2) ? s0.pos[idx - 2] : s1.pos[idx - 2] : OOR;
 
@@ -95,8 +103,8 @@ public class SRParserCtbHandlerZC08 extends SRParserHandler {
 
         return new AtomsZC08(
                 s0.curidx,
-                sfqp1,
-                sfqf1,
+                sfqp1,sLqp1,
+                sfqf1,sLqf1,
                 spqp2,
                 spqp1);
     }
@@ -106,7 +114,9 @@ public class SRParserCtbHandlerZC08 extends SRParserHandler {
         IntFeatVector v = new IntFeatVector();
 
         String sfqp1 = s0.atoms.get(AtomsZC08.F_f_qp1);
+        String sLqp1 = s0.atoms.get(AtomsZC08.F_L_qp1);
         String sfqf1 = s0.atoms.get(AtomsZC08.F_f_qf1);
+        String sLqf1 = s0.atoms.get(AtomsZC08.F_L_qf1);
         String spqp1 = s0.atoms.get(AtomsZC08.F_p_qp1);
         String spqp2 = s0.atoms.get(AtomsZC08.F_p_qp2);
 
@@ -114,7 +124,7 @@ public class SRParserCtbHandlerZC08 extends SRParserHandler {
         String sAct = act.toString();
 
         if (m_params.m_bUseTagFeature && act.isShiftPosAction()) {
-            SRParserCtbHandlerZC08.setTagFeaturesZC08(v, m_vocab, m_dict, bAdd, sAct, sfqp1, sfqf1, sfqf2, spqp1, spqp2);
+            SRParserCtbHandlerZC08.setTagFeaturesZC08(v, m_vocab, m_dict, bAdd, sAct, sfqp1,sLqp1, sfqf1,sLqf1, sfqf2, spqp1, spqp2);
         }
 
         return v;
@@ -123,7 +133,7 @@ public class SRParserCtbHandlerZC08 extends SRParserHandler {
     // tagging features described in Zhang and Clark (2008)
     static void setTagFeaturesZC08(
             IntFeatVector v, Vocab vocab, TagDictionary dict, boolean bAdd, String sAct,
-            String sfqp1, String sfqf1, String sfqf2, String spqp1, String spqp2) {
+            String sfqp1,String sLqp1, String sfqf1,String sLqf1, String sfqf2, String spqp1, String spqp2) {
         final int ln_sfqp1 = sfqp1.length();
         final int ln_sfqf1 = sfqf1.length();
         final int ln_sfqf2 = sfqf2.length();
@@ -136,10 +146,12 @@ public class SRParserCtbHandlerZC08 extends SRParserHandler {
         final char c_sfqf2_b = sfqf2.charAt(0);
 
         addFeature(v, "RF00-" + sfqf1, sAct, 1.0, bAdd, vocab);
+        addFeature(v, "RF10-" + sLqf1, sAct, 1.0, bAdd, vocab);
         addFeature(v, "RF00a-", sAct, 1.0, bAdd, vocab);
         addFeature(v, "RF01-" + spqp1, sAct, 1.0, bAdd, vocab);
         addFeature(v, "RF02-" + spqp2 + SEP + spqp1, sAct, 1.0, bAdd, vocab);
-
+        //addFeature(v, "RF03-" + sLqp1, sAct, 1.0, bAdd, vocab);
+        
         if (ln_sfqp1 < 3) {
             addFeature(v, "RF03-" + sfqp1, sAct, 1.0, bAdd, vocab);
         }
