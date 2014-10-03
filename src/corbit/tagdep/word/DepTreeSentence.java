@@ -29,9 +29,10 @@
  */
 package corbit.tagdep.word;
 
-import java.util.ArrayList;
 
-public class DepTreeSentence extends ArrayList<DepTree> {
+import java.util.LinkedList;
+
+public class DepTreeSentence extends LinkedList<DepTree> {
 
     private static final long serialVersionUID = 1L;
 
