@@ -37,6 +37,7 @@ import corbit.tagdep.word.DepTreeSentence;
 import corbit.tagdep.word.DepWord;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SRParserEvaluator {
@@ -68,7 +69,7 @@ public class SRParserEvaluator {
     int iNumRoot = 0;
     int iNumSent = 0;
     final int iPosCount;
-    final int iActCount;
+    int iActCount;
     int[][] miPosConfusion;
     int[][] miActConfusion;
     final TagDictionary m_dict;
@@ -103,8 +104,8 @@ public class SRParserEvaluator {
     public boolean evalSegmentedSentence(DepTreeSentence osent, DepTreeSentence gsent) {
         // store word boundaries
 
-        List<Integer> obounds = new ArrayList<>();
-        List<Integer> gbounds = new ArrayList<>();
+        List<Integer> obounds = new LinkedList<>();
+        List<Integer> gbounds = new LinkedList<>();
 
         obounds.add(0);
         gbounds.add(0);
@@ -489,13 +490,13 @@ public class SRParserEvaluator {
     public void evalActConfusion() {
         String[] sActs = new String[iActCount];
         Console.write("      ");
-        for (int i = 0; i < iActCount; ++i) {
-            sActs[i] = PDAction.getAction(i).toString();
-            if (sActs[i].contains("-")) {
-                sActs[i] = sActs[i].split("-")[1];
-            }
-            Console.write(String.format("%4s ", sActs[i]));
-        }
+//        for (int i = 0; i < iActCount; ++i) {
+//            sActs[i] = PDAction.getAction(i).toString();
+//            if (sActs[i].contains("-")) {
+//                sActs[i] = sActs[i].split("-")[1];
+//            }
+//            Console.write(String.format("%4s ", sActs[i]));
+//        }
         Console.write("TPOS ");
         Console.write("TOTL ");
         Console.writeLine();
