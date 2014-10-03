@@ -154,18 +154,23 @@ public class SRParserState implements Comparable<SRParserState> {
 
     public static DepTreeSentence getParsedResult(SRParserState s) {
         DepTreeSentence sent = new DepTreeSentence();
-
-        for (int i = 0; i < s.sent.size(); ++i) {
-            sent.add(new DepTree(sent, i, s.sent.get(i).form, null, -2));
+        
+        if (s != null){
+            for (int i = 0; i < s.sent.size(); ++i) {
+                sent.add(new DepTree(sent, i, s.sent.get(i).form, null,null, -2, null));
+            }
         }
+        
 
-        List<DepTree> lc = new ArrayList<>();
-        List<DepTree> _lc = new ArrayList<>();
-
+        List<DepTree> lc = new LinkedList<>();
+        List<DepTree> _lc = new LinkedList<>();
+        
+            
+      
         for (SRParserState _s = s; _s != null; _s = _s.preds.size() > 0 ? _s.pred0 : null) {
             // restore the parsed sentence
-
-            lc.add(_s.pstck[0]);
+            if(_s != null){
+                lc.add(_s.pstck[0]);
             while (lc.size() > 0) {
                 for (DepTree c : lc) {
                     _lc.addAll(c.children);
@@ -188,6 +193,8 @@ public class SRParserState implements Comparable<SRParserState> {
                 _lc.clear();
             }
             lc.clear();
+            }
+            
         }
 
         return sent;
