@@ -8,7 +8,7 @@
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
+ *     * Redistributions in   form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
  *     * Neither the names of the authors nor the names of its contributors
@@ -178,13 +178,16 @@ public class SRParserEvaluator {
                             || wg.head != -1 && wo.head != -1
                             && gbounds.get(wg.head) == obounds.get(wo.head)
                             && gbounds.get(wg.head + 1) == obounds.get(wo.head + 1)) {
-                        iNumRightDep++;
-                        if (wo.head == -1) {
-                            ++iNumRightRoot;
-                        } else {
-                            ++iNumRightNrt;
+                        if(wg.dependency == wo.dependency){
+                            iNumRightDep++;
+                            if (wo.head == -1) {
+                                ++iNumRightRoot;
+                            } else {
+                                ++iNumRightNrt;
+                            }
+                            bDepRight = true;
                         }
-                        bDepRight = true;
+                        
                     } else {
                         bDepRightSent = false;
                     }
@@ -192,7 +195,7 @@ public class SRParserEvaluator {
             }
 
             // check the exact correctness of the parse to determine if the update is necessary
-            if (wo == null || wg == null || obegin != gbegin || oend != gend || !wg.pos.equals(wo.pos)
+            if (wo == null || wg == null || obegin != gbegin || oend != gend || !wg.pos.equals(wo.pos) || wg.dependency.equals(wo.dependency)
                     || bParse && !(wo.head == -1 && wg.head == -1
                     || wo.head != -1 && wg.head != -1 && obounds.get(wo.head) == gbounds.get(wg.head) && obounds.get(wo.head + 1) == gbounds.get(wg.head + 1))) {
                 bAllRightSent = false;
@@ -228,22 +231,22 @@ public class SRParserEvaluator {
                     ++iNumTagIv;
                 }
             }
-            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head != -2) {
+            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head != -2 && wo.dependency != null) {
                 ++iNumOutDep;
             }
-            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head != -2) {
+            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head != -2 && wg.dependency != null) {
                 ++iNumDep;
             }
-            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head == -1) {
+            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head == -1 && wo.dependency != null) {
                 ++iNumOutRoot;
             }
-            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head == -1) {
+            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head == -1 && wo.dependency != null) {
                 ++iNumRoot;
             }
-            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head >= 0) {
+            if (b1 && bParse && !wo.pos.equals("PUNC") && wo.head >= 0 && wo.dependency != null) {
                 ++iNumOutNrt;
             }
-            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head >= 0) {
+            if (b2 && bParse && !wg.pos.equals("PUNC") && wg.head >= 0 && wg.dependency != null) {
                 ++iNumNrt;
             }
             
@@ -251,10 +254,10 @@ public class SRParserEvaluator {
             if(bDepRight && bPosRight){
                 ++iNumRightDepPos;
             }
-            if(b1 && !wo.pos.equals("PUNC") && wo.head != -2 && wo.pos != null){
+            if(b1 && !wo.pos.equals("PUNC") && wo.head != -2 && wo.pos != null && wo.dependency !=  null){
                 ++iNumOutDepPos;
             }
-            if(b2 && !wg.pos.equals("PUNC") && wg.head != -2 &&  wg.pos != null ){
+            if(b2 && !wg.pos.equals("PUNC") && wg.head != -2 &&  wg.pos != null && wg.dependency != null){
                 ++iNumDepPos;
             }
             // پايان تغييرات
@@ -327,11 +330,11 @@ public class SRParserEvaluator {
             boolean bPosRight = false;
 
             // check the exact correctness of the parse to determine if the update is necessary
-            if (!wg.pos.equals(wo.pos) || bParse && wg.head != wo.head) {
+            if (!wg.pos.equals(wo.pos) || bParse && wg.head != wo.head || wg.dependency.equals(wo.dependency)) {
                 bAllRightSent = false;
             }
 
-            if (wo.pos == null || wg.head == -2) {
+            if (wo.pos == null || wg.head == -2 || wo.dependency ==null) {
                 bCompSent = false;
             }
 
@@ -376,11 +379,11 @@ public class SRParserEvaluator {
             // dependency evaluation, where punctuation symbols are excluded
             if (bParse && !wg.pos.equals("PUNC")) {
                 ++iNumDepPos; // اضافه شده
-                if(wo.pos!=null){   //اضافه شده
+                if(wo.pos!=null && wo.dependency!=null){   //اضافه شده
                     ++iNumOutDepPos;
                 }
                 ++iNumDep;
-                if (wo.head != -2) {
+                if (wo.head != -2 && wo.dependency!=null) {
                     ++iNumOutDep;
                     if (wo.head == -1) {
                         ++iNumOutRoot;
@@ -394,7 +397,7 @@ public class SRParserEvaluator {
                     ++iNumNrt;
                 }
 
-                if (wg.head == wo.head) {
+                if (wg.head == wo.head && wg.dependency == wo.dependency) {
                     iNumRightDep++;
                     if (wo.head == -1) {
                         ++iNumRightRoot;
