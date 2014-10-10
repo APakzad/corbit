@@ -284,7 +284,7 @@ public class SRParserTransitionStd extends SRParserTransition {
         _lstact.add(PDAction.getShiftPosAction(sPos));
 
         return m_generator.generate(s.sent, _pstck, s.curidx + 1, s.idend + 1, s.idend + 1,
-                _scprf, _scins, scdlt, _fvins, vs, _preds, s, _trans, _heads, _pos, _fvdelay,
+                _scprf, _scins, scdlt, _fvins, vs, _preds, s, _trans, _heads, _pos,s.dependency, _fvdelay,
                 _lstact, s.gold && bGoldAct, s.nstates);
     }
 
@@ -320,7 +320,7 @@ public class SRParserTransitionStd extends SRParserTransition {
         _lstact.add(PDAction.SHIFT);
 
         return m_generator.generate(s.sent, _pstck, s.curidx + 1, s.idend + 1, s.idend + 1,
-                _scprf, _scins, scdlt, _fvins, vs, _preds, s, _trans, _heads, _pos, _fvdelay,
+                _scprf, _scins, scdlt, _fvins, vs, _preds, s, _trans, _heads, _pos,s.dependency, _fvdelay,
                 _lstact, s.gold && bGoldAct, s.nstates);
     }
 
@@ -353,7 +353,7 @@ public class SRParserTransitionStd extends SRParserTransition {
         _lstact.add(PDAction.getPosAction(sPos));
 
         return m_generator.generate(s.sent, _pstck, s.curidx, s.idbgn, s.idend,
-                _scprf, _scins, scdlt, _fvins, vr, s.preds, s.pred0, s.trans, s.heads, _pos, _fvdelay,
+                _scprf, _scins, scdlt, _fvins, vr, s.preds, s.pred0, s.trans, s.heads, _pos,s.dependency, _fvdelay,
                 _lstact, s.gold && bGoldAct, s.nstates);
     }
 
@@ -397,7 +397,7 @@ public class SRParserTransitionStd extends SRParserTransition {
             
             h.children.add(c);
             c.head = h.index;
-            c.dependency = DepTag;
+           
             
             int[] _heads = Arrays.copyOf(s.heads, s.heads.length);
             for (int i = 0; i < p.heads.length; ++i) {
@@ -413,13 +413,21 @@ public class SRParserTransitionStd extends SRParserTransition {
                     _pos[i] = p.pos[i];
                 }
             }
-
+            
+            String[] _dep = new String[s.sent.size()];
+            _dep[c.index] =DepTag;
+            c.dependency = DepTag;
+             
             List<PDAction> _lstact = new LinkedList<>(p.lstact);
             _lstact.addAll(s.lstact);
             _lstact.add(PDAction.getRRAction(DepTag));
-
+            
+            m_generator.generate(s.sent, _pstck, s.curidx, Math.max(p.idbgn, 0), s.idend,
+                    _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos,_dep, _fvdelay,
+                    _lstact, s.gold && p.gold && bGoldAct, s.nstates);
+            
             l.add(m_generator.generate(s.sent, _pstck, s.curidx, Math.max(p.idbgn, 0), s.idend,
-                    _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos, _fvdelay,
+                    _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos,_dep, _fvdelay,
                     _lstact, s.gold && p.gold && bGoldAct, s.nstates));
         }
         return l;
@@ -464,7 +472,7 @@ public class SRParserTransitionStd extends SRParserTransition {
            
             h.children.add(c);
             c.head = h.index;
-            c.dependency=DepTag;
+
             int[] _heads = Arrays.copyOf(s.heads, s.heads.length);
             for (int i = 0; i < p.heads.length; ++i) {
                 if (p.heads[i] != -2) {
@@ -479,13 +487,21 @@ public class SRParserTransitionStd extends SRParserTransition {
                     _pos[i] = p.pos[i];
                 }
             }
-
+            
+            String[] _dep = new String[s.sent.size()];
+            _dep[c.index] =DepTag;
+            c.dependency = DepTag;
+            
             List<PDAction> _lstact = new LinkedList<>(p.lstact);
             _lstact.addAll(s.lstact);
             _lstact.add(PDAction.getRLAction(DepTag));
-
+            
+            m_generator.generate(s.sent, _pstck, s.curidx, Math.max(p.idbgn, 0), s.idend,
+                    _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos,_dep, _fvdelay,
+                    _lstact, s.gold && p.gold && bGoldAct, s.nstates);
+                    
             l.add(m_generator.generate(s.sent, _pstck, s.curidx, Math.max(p.idbgn, 0), s.idend,
-                    _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos, _fvdelay,
+                    _scprf, _scins, scdlt, _fvins, vr, p.preds, p.pred0, p.trans, _heads, _pos,_dep, _fvdelay,
                     _lstact, s.gold && p.gold && bGoldAct, s.nstates));
         }
         return l;
