@@ -160,7 +160,7 @@ public class SRParserTransitionStd extends SRParserTransition {
 
         DepTree ws0 = s.pstck[0];
         DepTree ws1 = s.pstck[1];
-        String str = null;
+        String str=null;
         if (!m_bAssignPosFollowsShift
                 && ws0.index != -1
                 && s.pos[ws0.index] == null) // if m_bUseGoldPos == true, this pos is already assigned and shift action is omitted.
@@ -178,7 +178,7 @@ public class SRParserTransitionStd extends SRParserTransition {
                     if (m_bAssignGoldPos) {
                         l.add(PDAction.getShiftPosAction(gsent.get(s.curidx).pos));
                     } else {
-                        str = s.sent.get(s.curidx).form; 
+                        str= s.sent.get(s.curidx).form; 
                         //System.out.println("form1:"+str);
                         for (String spqf1 : m_dict.getTagCandidates(str)) {
                             l.add(PDAction.getShiftPosAction(spqf1));
@@ -188,20 +188,33 @@ public class SRParserTransitionStd extends SRParserTransition {
                     l.add(PDAction.SHIFT);
                 }
             }
-            if(s.sent.size() > s.curidx){
-                str = s.sent.get(s.curidx).form;
+            //if(s.sent.size() > s.curidx){
+            if (m_bParse && ws1 != null ) {
                 //System.out.println("form:"+str);
-                String tmp[] = m_dict.getDepTagCandidates(str);
+                String tmp[] = m_dict.getDepTagCandidates(ws0.form);
                 String depTag=null;
-                if (m_bParse && ws1 != null ) {
                 for(int count=0; count<tmp.length; count++ ){
                     depTag=tmp[count];
-                    l.add(PDAction.getRLAction(depTag));
+                    //l.add(PDAction.getRLAction(depTag));
                     l.add(PDAction.getRRAction(depTag));
                 }
                 
+                //*******************************************
+                for(SRParserState p : s.preds){
+                    if(p.pstck[0].index == -1){
+                        continue;
+                    }
+                    tmp = m_dict.getDepTagCandidates(p.pstck[0].form);
+                    depTag = null;
+                     for(int count=0; count<tmp.length; count++ ){
+                    depTag=tmp[count];
+                    //l.add(PDAction.getRLAction(depTag));
+                    l.add(PDAction.getRLAction(depTag));
+                    }
+                    
                 }
-           }
+            }
+           //}
            
         }
         
@@ -384,7 +397,8 @@ public class SRParserTransitionStd extends SRParserTransition {
             
             h.children.add(c);
             c.head = h.index;
-            c.dependency=DepTag;
+            c.dependency = DepTag;
+            
             int[] _heads = Arrays.copyOf(s.heads, s.heads.length);
             for (int i = 0; i < p.heads.length; ++i) {
                 if (p.heads[i] != -2) {
