@@ -41,9 +41,9 @@ import java.util.Set;
 public class SRParserDPState extends SRParserState {
 
     public SRParserDPState(DepTreeSentence sent, DepTree[] stack, int curidx, int idbgn, int idend, double scprf, double scins, double scdlt, List<IntFeatVector> fvins, IntFeatVector fvdlt,
-            Set<SRParserState> preds, SRParserState pred0, Map<SRParserState, Pair<IntFeatVector, Double>> trans, int[] heads, String[] pos, List<String> fvdelay, List<PDAction> lstact, boolean gold,
+            Set<SRParserState> preds, SRParserState pred0, Map<SRParserState, Pair<IntFeatVector, Double>> trans, int[] heads, String[] pos,String[] dependency, List<String> fvdelay, List<PDAction> lstact, boolean gold,
             long states) {
-        super(sent, stack, curidx, idbgn, idend, scprf, scins, scdlt, fvins, fvdlt, preds, pred0, trans, heads, pos, fvdelay, lstact, gold, states);
+        super(sent, stack, curidx, idbgn, idend, scprf, scins, scdlt, fvins, fvdlt, preds, pred0, trans, heads, pos, dependency, fvdelay, lstact, gold, states);
     }
 
     @Override
