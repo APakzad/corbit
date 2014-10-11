@@ -72,6 +72,7 @@ public class SRParserStateGenerator {
                 new LinkedHashMap<SRParserState, Pair<IntFeatVector, Double>>(),
                 new int[sent.size()],
                 new String[sent.size()],
+                new String[sent.size()],
                 m_params.m_bEvalDelay ? new LinkedList<String>() : null,
                 new LinkedList<PDAction>(),
                 true, 1)
@@ -85,6 +86,7 @@ public class SRParserStateGenerator {
                 new LinkedHashMap<SRParserState, Pair<IntFeatVector, Double>>(),
                 new int[sent.size()],
                 new String[sent.size()],
+                new String[sent.size()],
                 m_params.m_bEvalDelay ? new LinkedList<String>() : null,
                 new LinkedList<PDAction>(),
                 true, 1);
@@ -93,6 +95,7 @@ public class SRParserStateGenerator {
         for (int i = 0; i < sent.size(); ++i) {
             // s.pos[i] = sent.get(i).pos;
             s.heads[i] = sent.get(i).head;
+            s.dependency[i] = sent.get(i).dependency;
         }
         s.calcAtomicFeatures(m_fhandler);
         return s;
@@ -110,6 +113,7 @@ public class SRParserStateGenerator {
                 new LinkedHashMap<>(s.trans),
                 Arrays.copyOf(s.heads, s.heads.length),
                 Arrays.copyOf(s.pos, s.pos.length),
+                Arrays.copyOf(s.dependency, s.dependency.length),        
                 m_params.m_bEvalDelay ? new LinkedList<>(s.fvdelay) : null,
                 new LinkedList<>(s.lstact),
                 s.gold,
@@ -124,6 +128,7 @@ public class SRParserStateGenerator {
                 new LinkedHashMap<>(s.trans),
                 Arrays.copyOf(s.heads, s.heads.length),
                 Arrays.copyOf(s.pos, s.pos.length),
+                Arrays.copyOf(s.dependency, s.dependency.length),
                 m_params.m_bEvalDelay ? new LinkedList<>(s.fvdelay) : null,
                 new LinkedList<>(s.lstact),
                 s.gold,
@@ -149,6 +154,7 @@ public class SRParserStateGenerator {
             Map<SRParserState, Pair<IntFeatVector, Double>> trans,
             int[] heads,
             String[] pos,
+            String[] dependency,
             List<String> fvdelay,
             List<PDAction> lstact,
             boolean gold,
@@ -157,12 +163,12 @@ public class SRParserStateGenerator {
                 ? new SRParserDPState(
                 sent, stack,
                 curidx, idbgn, idend, scprf, scins, scdlt,
-                fvins, fvdlt, preds, pred0, trans, heads, pos, fvdelay,
+                fvins, fvdlt, preds, pred0, trans, heads, pos,dependency, fvdelay,
                 lstact, gold, states)
                 : new SRParserState(
                 sent, stack,
                 curidx, idbgn, idend, scprf, scins, scdlt,
-                fvins, fvdlt, preds, pred0, trans, heads, pos, fvdelay,
+                fvins, fvdlt, preds, pred0, trans, heads, pos,dependency, fvdelay,
                 lstact, gold, states);
         s.calcAtomicFeatures(m_fhandler);
         return s;
