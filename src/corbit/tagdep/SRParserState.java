@@ -65,6 +65,7 @@ public class SRParserState implements Comparable<SRParserState> {
     public AtomicFeatures atoms;
     public int[] heads;
     public String[] pos;
+    public String[] dependency;
     public List<String> fvdelay;
     public double scbonus;
     public final List<PDAction> lstact; // inside action sequence
@@ -87,6 +88,7 @@ public class SRParserState implements Comparable<SRParserState> {
             Map<SRParserState, Pair<IntFeatVector, Double>> trans,
             int[] heads,
             String[] pos,
+            String[] dependency,
             List<String> fvdelay,
             List<PDAction> lstact,
             boolean gold,
@@ -106,6 +108,7 @@ public class SRParserState implements Comparable<SRParserState> {
         this.preds = preds;
         this.heads = heads;
         this.pos = pos;
+        this.dependency = dependency;
         this.fvdelay = fvdelay;
         this.scbonus = 0.0d;
         this.lstact = lstact;
@@ -183,7 +186,7 @@ public class SRParserState implements Comparable<SRParserState> {
                     DepTree seg = sent.get(idx);
                     seg.head = _s.heads[idx];
                     seg.pos = _s.pos[idx];
-
+                    seg.dependency = _s.dependency[idx];
                     // if (seg.head == -1) sent.Root = idx;
                 }
                 List<DepTree> __lc = lc;
