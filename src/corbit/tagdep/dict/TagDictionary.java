@@ -31,6 +31,7 @@ package corbit.tagdep.dict;
 
 import corbit.commons.util.Statics;
 import corbit.commons.util.StepCounter;
+import corbit.tagdep.SRParser;
 import corbit.tagdep.io.ParseReader;
 import corbit.tagdep.word.DepTree;
 import corbit.tagdep.word.DepTreeSentence;
@@ -57,6 +58,7 @@ public abstract class TagDictionary {
 
     private static final long serialVersionUID = 8161161836265425026L;
     protected final Map<String, Integer> m_tagIndex;
+    protected final Map<String, Integer> m_DepTagIndex;
     protected final String[] m_tagList;
     protected final String[] m_openTagList;
     protected final Set<String> m_closedTagSet;
@@ -71,7 +73,8 @@ public abstract class TagDictionary {
     protected Map<String, String[]> m_DepTagDict; //افزوده شده
     
     protected final String[] m_DepTagList;// افزوده شده
-
+    public Map<String, String[]> POS_DEP = new HashMap<>();
+    
     protected TagDictionary(
             final String[] openTagList,
             final String[] closedTagList,
@@ -95,6 +98,16 @@ public abstract class TagDictionary {
             {
                 for (int i = 0; i < tagList.length; ++i) {
                     put(tagList[i], i);
+                }
+            }
+        });
+        
+         m_DepTagIndex = Collections.unmodifiableMap(new LinkedHashMap<String, Integer>() {
+            private static final long serialVersionUID = 1L;
+
+            {
+                for (int i = 0; i < DepTags.length; ++i) {
+                    put(DepTags[i], i);
                 }
             }
         });
@@ -163,15 +176,13 @@ public abstract class TagDictionary {
     }
     
     //تابع افزوده شده
-    public String[] getDepTagCandidates(String sForm){
-        if(m_DepTagDict.containsKey(sForm)){
-            return m_DepTagDict.get(sForm);
+    public String[] getDepTagCandidates(DepTree t){
+        if(m_DepTagDict.containsKey(t.form)){
+            return m_DepTagDict.get(t.form);
         }
         else{
-            return null;
-            
-        }
-        
+            return  POS_DEP.get(t.pos);
+        }   
     }
 
     public String[] getTagList() {
@@ -184,6 +195,9 @@ public abstract class TagDictionary {
     
     public int getTagIndex(String sPos) {
         return m_tagIndex.containsKey(sPos) ? m_tagIndex.get(sPos) : -1;
+    }
+    public int getDepTagIndex(String sPos) {
+        return m_DepTagIndex.containsKey(sPos) ? m_DepTagIndex.get(sPos) : -1;
     }
 
     public int getTagCount() {
@@ -349,6 +363,8 @@ public abstract class TagDictionary {
                 m_closedTagDict.put(p[0].substring(5), lp);
             } else if (p[0].startsWith("@@A@_")) {
                 m_allTagDict.put(p[0].substring(5), lp);
+            } else if(p[0].startsWith("@@D@_")){
+                m_DepTagDict.put(p[0].substring(5), lp);
             } else {
                 m_tagDict.put(p[0], lp);
             }
@@ -377,6 +393,16 @@ public abstract class TagDictionary {
         }
         for (Entry<String, String[]> e : m_allTagDict.entrySet()) {
             sw.print("@@A@_" + e.getKey());
+            sw.print("\t");
+            String[] ss = e.getValue();
+            for (int i = 0; i < ss.length; ++i) {
+                sw.print(ss[i] + ":" + "\t");
+            }
+            sw.println();
+        }
+        
+        for(Entry<String, String[]> e : m_DepTagDict.entrySet()){
+            sw.print("@@D@_" + e.getKey());
             sw.print("\t");
             String[] ss = e.getValue();
             for (int i = 0; i < ss.length; ++i) {
