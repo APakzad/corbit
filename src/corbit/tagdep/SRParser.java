@@ -30,6 +30,7 @@
 package corbit.tagdep;
 
 import corbit.commons.Vocab;
+import corbit.commons.dict.CTB5TagDictionary;
 import corbit.commons.io.Console;
 import corbit.commons.ml.AveragedWeight;
 import corbit.commons.ml.IntFeatVector;
@@ -65,6 +66,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -77,6 +79,8 @@ import java.util.zip.GZIPOutputStream;
 
 public class SRParser extends SRParserParameters {
 
+    
+    
     public enum FeatureType {
 
         HS10, ZC11, ZC08
@@ -310,7 +314,11 @@ public class SRParser extends SRParserParameters {
                  */
 
                 IntFeatVector vdTotal = bTrain ? new IntFeatVector() : null;
-
+                
+                
+               
+                String[] values = null;
+                
                 for (int i = 0; i < lOuts.size(); ++i) {
                     // retrieve the results
                     ParseResult result = lOuts.get(i).get();
@@ -318,6 +326,30 @@ public class SRParser extends SRParserParameters {
                     SRParserState so = result.parsedState;
                     SRParserState sg = result.goldState;
                     DepTreeSentence osent = SRParserState.getParsedResult(so);
+                    values = new String[44];
+                    for(int d=0; d<osent.size() ; d++){
+                        if(osent.get(d).dependency != null){
+                            
+                            
+                            if( !m_dict.POS_DEP.containsKey(osent.get(d).pos) ){
+                                values = new String[44];
+                                values[0] = osent.get(d).dependency;
+                                m_dict.POS_DEP.put(osent.get(d).pos, values);
+                            }else{
+                                values = m_dict.POS_DEP.get(osent.get(d).pos);
+                                int c=0;
+                                for( c=0; c<40; c++){
+                                    if(values[c]== null){
+                                        break;
+                                    }
+                                }
+                                values[c] = osent.get(d).dependency;
+                                m_dict.POS_DEP.put(osent.get(d).pos,values);
+                            }
+                          values=null;  
+                        }
+                    }
+                    
                     DepTreeSentence gsent = gsents.get(iPhase * iParallel + i);
                     DepTreeSentence rsent = rsents != null ? rsents.get(iPhase * iParallel + i) : null;
 
