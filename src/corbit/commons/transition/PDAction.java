@@ -52,6 +52,7 @@ public class PDAction {
     static final int m_numPos;
     static final int m_numDepTag;// افزوده شده
     static final String[] m_posSet;
+    static final String[] m_DepPosSet;
     //static final String[] m_posDepTag;// افزوده شده
     static final CTBTagDictionary m_dict;
 
@@ -74,6 +75,7 @@ public class PDAction {
         
         m_numPos = m_dict.getTagCount();
         m_posSet = m_dict.getTagList();
+        m_DepPosSet = m_dict.getDepTagList();
         m_numDepTag = m_dict.getDepTagCount();
     }
 
@@ -86,45 +88,47 @@ public class PDAction {
     public static PDAction getAction(int index) {
         if (index == 0) {
             return SHIFT;
-        } else if (index == 1) {
-            return getRRAction(null);
-        } else if (index == 2) {
-            return getRLAction(null);
-        } else if (index == 3) {
+        }  else if (index == 1) {
             return NOT_AVAILABLE;
-        } else if (index == 4) {
+        } else if (index == 2) {
             return END_STATE;
-        } else if (index == 5) {
+        } else if (index == 3) {
             return PENDING;
-        } else if (index < 6 + m_numPos) {
-            return getPosAction(m_posSet[index - 6]);
+        } else if (index < 4 + m_numPos) {
+            return getPosAction(m_posSet[index - 4]);
+        }else if (index < 4 + m_numPos +m_dict.getDepTagCount()  ) {
+            return getRRAction(m_DepPosSet[index-4-m_numPos] );
+        } else if (index < 4 + m_numPos + m_dict.getDepTagCount()*2) {
+            return getRLAction(m_DepPosSet[index-4-m_numPos- m_dict.getDepTagCount()]);
         } else {
             throw new IllegalArgumentException();
         }
     }
 
     public static int getActionIndex(PDAction act) {
+        int idx = 0;
         if (act == SHIFT) {
             return 0;
         } else if (act.isReduceRight()) {
-            return 1;
+            idx = m_dict.getDepTagIndex(act.getPos());//+4+m_posSet.length;
+            return idx;
         } else if (act.isReduceLeft()) {
-            return 2;
+            return m_dict.getDepTagIndex(act.getPos())+4+m_posSet.length+m_dict.getDepTagCount();
         } else if (act == NOT_AVAILABLE) {
-            return 3;
+            return 1;
         } else if (act == END_STATE) {
-            return 4;
+            return 2;
         } else if (act == PENDING) {
-            return 5;
+            return 3;
         } else if (act.isPosAction() || act.isShiftPosAction()) {
-            return 6 + m_dict.getTagIndex(act.getPos());
+            return 4 + m_dict.getTagIndex(act.getPos());
         } else {
             throw new IllegalArgumentException("Unknown act: " + act);
         }
     }
 
     public static int getActionCount() {
-        return 6 + m_numPos + m_numDepTag*2;
+        return 4 + m_numPos + m_numDepTag*2;
     }
 
     public static PDAction getPosAction(String sPos) {
