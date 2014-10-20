@@ -91,10 +91,13 @@ public class SRParserTransitionStd extends SRParserTransition {
         PDAction goldAct = gsent != null ? getGoldAction(s, gsent) : PDAction.NOT_AVAILABLE;
 
         for (PDAction act : getNextActions(s, m_bAssignGoldPos ? gsent : null)) {
-            for (SRParserState sNext : moveNext(s, gsent, act, act.shallowEquals(goldAct), bAdd)) // TODO: shallow unnecessary
-            {
-                l.add(new Pair<>(act, sNext));
+            if( act != null){
+                for (SRParserState sNext : moveNext(s, gsent, act, act.shallowEquals(goldAct), bAdd)) // TODO: shallow unnecessary
+                {
+                    l.add(new Pair<>(act, sNext));
+                }
             }
+            
         }
         return l;
     }
@@ -190,8 +193,8 @@ public class SRParserTransitionStd extends SRParserTransition {
             }
             //if(s.sent.size() > s.curidx){
             if (m_bParse && ws1 != null ) {
-                //System.out.println("form:"+str);
-                String tmp[] = m_dict.getDepTagCandidates(ws0.form);
+                System.out.println("form:"+ws0.form);
+                String tmp[] = m_dict.getDepTagCandidates(ws0);
                 String depTag=null;
                 for(int count=0; count<tmp.length; count++ ){
                     depTag=tmp[count];
@@ -204,7 +207,8 @@ public class SRParserTransitionStd extends SRParserTransition {
                     if(p.pstck[0].index == -1){
                         continue;
                     }
-                    tmp = m_dict.getDepTagCandidates(p.pstck[0].form);
+                    System.out.println("form:"+p.pstck[0].form);
+                    tmp = m_dict.getDepTagCandidates(p.pstck[0]);
                     depTag = null;
                      for(int count=0; count<tmp.length; count++ ){
                     depTag=tmp[count];
