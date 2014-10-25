@@ -91,12 +91,15 @@ public class SRParserEvaluator {
         List<PDAction> sag = SRParserState.getActionSequence(sg);
         // Console.writeLine("Gold:   " + sag.toString());
         // Console.writeLine("Output: " + sao.toString());
+        int h=0; int d=0;
         for (int i = 0; i < Math.min(sao.size(), sag.size()); ++i) {
             PDAction ao = sao.get(i);
             PDAction ag = sag.get(i);
             if (ao == null || ag == null) {
                 break;
             }
+            h = PDAction.getActionIndex(ag); 
+            d = PDAction.getActionIndex(ao);
             ++miActConfusion[PDAction.getActionIndex(ag)][PDAction.getActionIndex(ao)];
         }
     }
@@ -493,13 +496,13 @@ public class SRParserEvaluator {
     public void evalActConfusion() {
         String[] sActs = new String[iActCount];
         Console.write("      ");
-//        for (int i = 0; i < iActCount; ++i) {
-//            sActs[i] = PDAction.getAction(i).toString();
-//            if (sActs[i].contains("-")) {
-//                sActs[i] = sActs[i].split("-")[1];
-//            }
-//            Console.write(String.format("%4s ", sActs[i]));
-//        }
+        for (int i = 0; i < iActCount; ++i) {
+            sActs[i] = PDAction.getAction(i).toString();
+            if (sActs[i].contains("-")) {
+                sActs[i] = sActs[i].split("-")[1];
+            }
+            Console.write(String.format("%4s ", sActs[i]));
+        }
         Console.write("TPOS ");
         Console.write("TOTL ");
         Console.writeLine();
